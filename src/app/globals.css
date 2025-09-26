@@ -1,0 +1,190 @@
+@import "tailwindcss";
+
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
+}
+
+/* Reset para eliminar scroll innecesario */
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden; /* Previene scroll horizontal */
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: Arial, Helvetica, sans-serif;
+  min-height: 100vh;
+  box-sizing: border-box;
+}
+
+/* Asegura que todos los elementos respeten el box-sizing */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+/* Neutraliza el azul de autocompletado de Chrome para inputs */
+input:-webkit-autofill,
+textarea:-webkit-autofill,
+select:-webkit-autofill {
+  -webkit-text-fill-color: #111827; /* Tailwind gray-900 */
+  caret-color: #111827;
+  box-shadow: 0 0 0px 1000px #ffffff inset; /* mismo fondo que el input */
+  transition: background-color 99999s ease-in-out 0s;
+}
+
+input:-webkit-autofill:focus,
+textarea:-webkit-autofill:focus,
+select:-webkit-autofill:focus {
+  -webkit-text-fill-color: #111827;
+  caret-color: #111827;
+  box-shadow: 0 0 0px 1000px #ffffff inset;
+}
+
+/* Optimización para imagen de fondo del login */
+.login-background {
+  background-size: cover;
+  background-position: left center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+}
+
+/* Media queries para diferentes tamaños de pantalla */
+@media (min-width: 1920px) {
+  .login-background {
+    background-size: 100% 100%;
+    background-position: center center;
+  }
+}
+
+@media (min-width: 2560px) {
+  .login-background {
+    background-size: cover;
+    background-position: left center;
+  }
+}
+
+/* CSS específico para el login con mejor adaptación */
+.login-bg-responsive {
+  background-image: url('/LOG-IN-01.svg');
+  background-size: cover;
+  background-position: left top;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  min-height: 100vh;
+  width: 100vw;
+}
+
+/* Optimización para pantallas grandes */
+@media (min-width: 1920px) {
+  .login-bg-responsive {
+    background-size: cover;
+    background-position: left top;
+    min-height: 100vh;
+  }
+}
+
+@media (min-width: 2560px) {
+  .login-bg-responsive {
+    background-size: cover;
+    background-position: left top;
+    min-height: 100vh;
+  }
+}
+
+@media (min-width: 3440px) {
+  .login-bg-responsive {
+    background-size: cover;
+    background-position: left top;
+    background-color: #2d3a2a;
+    min-height: 100vh;
+  }
+}
+
+/* Para pantallas muy altas, asegurar que la imagen cubra toda la altura */
+@media (min-height: 1080px) {
+  .login-bg-responsive {
+    background-size: cover;
+    background-position: left top;
+    height: 100vh;
+  }
+}
+
+/* Estrategia específica para pantallas de 24" (1920x1080 y similares) */
+@media (min-width: 1920px) and (min-height: 1080px) {
+  .login-bg-responsive {
+    background-size: 90% auto;
+    background-position: left center;
+    background-attachment: scroll;
+    background-color: #2d3a2a;
+  }
+}
+
+/* Para pantallas de 24" con más altura (1920x1200, 1920x1440) */
+@media (min-width: 1920px) and (min-height: 1200px) {
+  .login-bg-responsive {
+    background-size: 85% auto;
+    background-position: left center;
+    background-attachment: scroll;
+    background-color: #2d3a2a;
+  }
+}
+
+/* Para pantallas 4K y superiores */
+@media (min-width: 2560px) and (min-height: 1440px) {
+  .login-bg-responsive {
+    background-size: 80% auto;
+    background-position: left center;
+    background-attachment: scroll;
+    background-color: #2d3a2a;
+  }
+}
+
+/* Normalización para modales generales (evita herencias de opacidad/filters) */
+.modal {
+  color: #111827; /* gray-900 */
+}
+.modal * {
+  opacity: 1 !important;
+  filter: none !important;
+}
+.modal-content {
+  background: #ffffff;
+  color: #111827;
+}
+.modal input,
+.modal textarea,
+.modal select {
+  background-color: #ffffff;
+  color: #111827;
+}
+.modal input::placeholder,
+.modal textarea::placeholder {
+  color: #9ca3af; /* gray-400 */
+}
+
+/* Ocultar scrollbar para pestañas del modal */
+.scrollbar-hide {
+  -ms-overflow-style: none;  /* Internet Explorer 10+ */
+  scrollbar-width: none;  /* Firefox */
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;  /* Safari and Chrome */
+}
