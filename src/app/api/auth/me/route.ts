@@ -21,8 +21,8 @@ export async function GET() {
             });
             return NextResponse.json(response.data, { status: response.status });
         } catch (err) {
-            const status = (err as any)?.response?.status ?? 502;
-            const data = (err as any)?.response?.data ?? { ok: false, message: 'Error conectando con el API' };
+            const status = (err as { response?: { status?: number } })?.response?.status ?? 502;
+            const data = (err as { response?: { data?: unknown } })?.response?.data ?? { ok: false, message: 'Error conectando con el API' };
             console.error('[AUTH_ME_PROXY_ERROR]', { targetUrl, status, data });
             return NextResponse.json(data, { status });
         }

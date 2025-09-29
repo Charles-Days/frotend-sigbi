@@ -2,7 +2,7 @@
 
 import { StepProps } from './types';
 
-export default function Registral({ datos, actualizarDatos, errores }: StepProps) {
+export default function Registral({ datos, actualizarDatos }: StepProps) {
   return (
     <div className="space-y-8">
       <div className="text-center mb-8">

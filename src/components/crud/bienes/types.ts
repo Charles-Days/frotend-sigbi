@@ -19,6 +19,8 @@ export interface InmuebleData {
   ubicacionRegistral?: string;
   ubicacionMaps?: string;
   coordenadas?: string; // "latitud, longitud" opcional, máx 255 caracteres
+  unidadMedida?: 'm²' | 'hectáreas'; // Unidad de medida para superficie
+  usoActual?: string; // Uso actual del terreno
 
   // PASO 2: Jurídico
   numeroEscritura?: string;
@@ -44,6 +46,11 @@ export interface InmuebleData {
   instrumento_juridico_uso?: string; // Campo del backend
   instrumentoJuridicoAcredita?: string;
   instrumento_juridico_acredita?: string; // Campo del backend
+  tituloPropiedad?: string; // Documentos legales
+  noEscritura?: string; // Número de escritura
+  noResolucion?: string; // Número de resolución
+  instrumentoUso?: string; // Instrumento de uso
+  actoJuridicoAnota?: string; // Acto jurídico que se anota
 
   // PASO 3: Notación Marginal
   notacionMarginal?: boolean;
@@ -59,7 +66,7 @@ export interface InmuebleData {
   valorSenaladoAvaluo?: string;
   fechaAvaluo?: string;
   tipoValuacion?: string;
-  pdf?: string;
+  pdfValuacion?: string;
   pdf_avaluo?: string; // Campo del backend
 
   // PASO 5: Ocupación
@@ -79,7 +86,7 @@ export interface InmuebleData {
   superficie?: string;
   levantamientoTopografico?: string;
   fechaLevantamientoTopografico?: string;
-  pdf?: string;
+  pdfCatastral?: string;
   pdf_catastral?: string; // Campo del backend
 
   // PASO 7: Registral

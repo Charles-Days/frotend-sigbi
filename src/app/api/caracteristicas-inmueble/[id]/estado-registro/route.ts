@@ -5,7 +5,7 @@ const API_BASE_URL = process.env.API_BASE_URL || "http://localhost:3001";
 
 export async function GET(
   request: Request,
-  context: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
   const token = (await cookies()).get("access_token")?.value;
   const { id } = await context.params;

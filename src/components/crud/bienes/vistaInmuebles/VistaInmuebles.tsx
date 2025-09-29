@@ -1,10 +1,9 @@
 'use client';
 
-import { useState, useEffect, useMemo } from 'react';
+import { useState } from 'react';
 import Link from 'next/link';
 import AdvancedFilters from '@/components/ui/AdvancedFilters';
 import TablaInmuebles from './TablaInmuebles';
-import ExportSection from '@/components/ui/ExportSection';
 import Pagination from '@/components/ui/Pagination';
 
 interface Inmueble {
@@ -33,36 +32,25 @@ interface VistaInmueblesProps {
   onCargarBienes: () => void;
 }
 
-export default function VistaInmuebles({ 
-  bienes, 
-  total, 
-  loading, 
-  error, 
-  onCargarBienes 
+export default function VistaInmuebles({
+  bienes,
+  total,
+  loading,
+  error
 }: VistaInmueblesProps) {
-  const [selectedIds, setSelectedIds] = useState<string[]>([]);
-  const [filters, setFilters] = useState<Record<string, unknown>>({});
-  const [searchTerm, setSearchTerm] = useState<string>('');
   const [sortField, setSortField] = useState<string>('');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
   const [currentPage, setCurrentPage] = useState<number>(0);
   const [pageSize, setPageSize] = useState<number>(50);
 
-  const params = useMemo(() => {
-    const baseParams: Record<string, unknown> = {};
-    if (searchTerm) baseParams.search = searchTerm;
-    return baseParams;
-  }, [searchTerm]);
 
   // Funciones de manejo de eventos
-  const handleFiltersChange = (newFilters: Record<string, unknown>) => {
-    setFilters(newFilters);
-    setCurrentPage(0);
+  const handleFiltersChange = (_newFilters: Record<string, unknown>) => {
+    // Placeholder function
   };
 
-  const handleSearchChange = (search: string) => {
-    setSearchTerm(search);
-    setCurrentPage(0);
+  const handleSearchChange = (_search: string) => {
+    // Placeholder function
   };
 
   const handlePageSizeChange = (newPageSize: number) => {
@@ -79,18 +67,16 @@ export default function VistaInmuebles({
     setCurrentPage(page);
   };
 
-  const handleSelectionChange = (ids: string[]) => {
-    setSelectedIds(ids);
+  const handleClearFilters = () => {
+    // Placeholder function
   };
 
-  const handleSelectAll = () => {
-    const allIds = bienes.map(bien => bien.id);
-    setSelectedIds(allIds);
+  const handleSelectionChange = (_ids: string[]) => {
+    // Placeholder function
   };
 
-  const handleDeselectAll = () => {
-    setSelectedIds([]);
-  };
+
+
 
   const handleRowClick = (inmueble: Inmueble) => {
     // Navegar a la página de edición
@@ -103,16 +89,6 @@ export default function VistaInmuebles({
     window.location.href = '/reportes';
   };
 
-  const handleClearFilters = () => {
-    setFilters({});
-    setSearchTerm('');
-    setCurrentPage(0);
-  };
-
-  // Limpiar selección cuando cambien los datos
-  useEffect(() => {
-    setSelectedIds([]);
-  }, [bienes]);
 
   return (
     <div className="space-y-6">

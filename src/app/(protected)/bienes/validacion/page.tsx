@@ -1,7 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import VistaInmuebles from '@/components/crud/bienes/vistaInmuebles/VistaInmuebles';
+import { useEffect, useState, useCallback } from 'react';
 import TablaValidacion from '@/components/crud/bienes/vistaInmuebles/TablaValidacion';
 
 export default function BienesValidacionPage() {
@@ -114,6 +113,25 @@ export default function BienesValidacionPage() {
     comentariosAprobacion?: string | null;
   };
   
+  type RegistroApi = {
+    id: string;
+    numeroRegistro?: string;
+    propietario?: string;
+    completitud?: number;
+    tipoInmueble?: string;
+    estado?: string;
+    municipio?: string;
+    estadoActualInmueble?: string;
+    estadoAprobacion?: string;
+    aprobadoPorId?: string | null;
+    fechaAprobacion?: string | null;
+    comentariosAprobacion?: string | null;
+    createdAt?: string;
+    updatedAt?: string;
+    juridico?: Inmueble['juridico'];
+    catastrales?: Inmueble['catastrales'];
+  };
+  
   const [bienes, setBienes] = useState<Inmueble[]>([]);
   const [total, setTotal] = useState<number>(0);
   const [loading, setLoading] = useState<boolean>(false);
@@ -153,7 +171,7 @@ export default function BienesValidacionPage() {
     }
   };
 
-  const handleRechazar = async (inmuebleId: string, comentarios: string) => {
+  const handleRechazar = async (inmuebleId: string, comentarios?: string) => {
     try {
       const response = await fetch(`/api/v1/caracteristicas-inmueble/${inmuebleId}/cambiar-estado-aprobacion`, {
         method: 'POST',
@@ -162,7 +180,7 @@ export default function BienesValidacionPage() {
         },
         body: JSON.stringify({
           nuevoEstado: 'RECHAZADO',
-          comentarios: comentarios
+          comentarios: comentarios ?? ''
         }),
       });
 
@@ -186,7 +204,7 @@ export default function BienesValidacionPage() {
     }
   };
 
-  const cargarBienes = async () => {
+  const cargarBienes = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
@@ -207,10 +225,10 @@ export default function BienesValidacionPage() {
         throw new Error(data.message || 'Error al obtener inmuebles pendientes');
       }
       
-      const registros = data.data?.data || [];
+      const registros = (data.data?.data || []) as RegistroApi[];
       
       // Mapear al formato esperado por la tabla
-      const bienesEnValidacion = registros.map((registro: any) => ({
+      const bienesEnValidacion = registros.map((registro: RegistroApi): Inmueble => ({
         id: registro.id,
         numeroRegistro: registro.numeroRegistro,
         propietario: registro.propietario,
@@ -249,11 +267,11 @@ export default function BienesValidacionPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   useEffect(() => {
     cargarBienes();
-  }, []);
+  }, [cargarBienes]);
 
   return (
     <div className="min-h-screen" style={{backgroundColor: '#F5F1EE'}}>

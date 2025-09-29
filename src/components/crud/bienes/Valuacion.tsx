@@ -13,7 +13,7 @@ const getFileName = (url?: string) => {
   }
 };
 
-export default function Valuacion({ datos, actualizarDatos, errores, setArchivo }: StepProps) {
+export default function Valuacion({ datos, actualizarDatos, setArchivo }: StepProps) {
   const [openTipo, setOpenTipo] = useState(false);
   const listaRef = useRef<HTMLUListElement | null>(null);
   
@@ -144,20 +144,20 @@ export default function Valuacion({ datos, actualizarDatos, errores, setArchivo 
                   const file = e.target.files?.[0];
                   if (!file) return;
                   // Guardar para envío integrado por FormData
-                  setArchivo && setArchivo('valuacion:pdf', file);
+                  setArchivo?.('valuacion:pdf', file);
                   // Mostrar nombre temporalmente
-                  actualizarDatos('pdf', file.name);
+                  actualizarDatos('pdfValuacion', file.name);
                 }}
               />
               Subir PDF
             </label>
-            {(datos.pdf || datos.pdf_avaluo) && (
+            {(datos.pdfValuacion || datos.pdf_avaluo) && (
               <div className="flex items-center gap-2 bg-gray-50 border border-gray-200 rounded-md px-3 py-2">
-                <span className="text-sm text-gray-700 truncate max-w-xs">{getFileName(datos.pdf || datos.pdf_avaluo)}</span>
-                {((/https?:\/\//.test(String(datos.pdf || datos.pdf_avaluo))) || String(datos.pdf || datos.pdf_avaluo).startsWith('/api/v1/files/')) && (
-                  <a href={(datos.pdf || datos.pdf_avaluo) as string} target="_blank" rel="noopener noreferrer" className="text-blue-600 text-sm hover:underline">Ver</a>
+                <span className="text-sm text-gray-700 truncate max-w-xs">{getFileName(datos.pdfValuacion || datos.pdf_avaluo)}</span>
+                {((/https?:\/\//.test(String(datos.pdfValuacion || datos.pdf_avaluo))) || String(datos.pdfValuacion || datos.pdf_avaluo).startsWith('/api/v1/files/')) && (
+                  <a href={(datos.pdfValuacion || datos.pdf_avaluo) as string} target="_blank" rel="noopener noreferrer" className="text-blue-600 text-sm hover:underline">Ver</a>
                 )}
-                <button type="button" onClick={() => actualizarDatos('pdf', '')} className="text-red-600 text-sm hover:underline">Quitar</button>
+                <button type="button" onClick={() => actualizarDatos('pdfValuacion', '')} className="text-red-600 text-sm hover:underline">Quitar</button>
               </div>
             )}
           </div>
@@ -166,7 +166,7 @@ export default function Valuacion({ datos, actualizarDatos, errores, setArchivo 
       </div>
 
       {/* Valuation summary */}
-      {(datos.numeroAvaluo || datos.valorSenaladoAvaluo || datos.tipoValuacion || datos.pdf || datos.pdf_avaluo) && (
+      {(datos.numeroAvaluo || datos.valorSenaladoAvaluo || datos.tipoValuacion || datos.pdfValuacion || datos.pdf_avaluo) && (
         <div className="bg-green-50 border border-green-200 rounded-lg p-4">
           <h4 className="font-semibold text-green-800 mb-3">Resumen de Valuación</h4>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
@@ -196,12 +196,12 @@ export default function Valuacion({ datos, actualizarDatos, errores, setArchivo 
             )}
           </div>
           
-          {(datos.pdf || datos.pdf_avaluo) && (
+          {(datos.pdfValuacion || datos.pdf_avaluo) && (
             <div className="mt-3 pt-3 border-t border-green-200">
               <div className="text-green-700">
                 <p className="font-medium">📎 Archivo PDF</p>
                 <a 
-                  href={(datos.pdf || datos.pdf_avaluo) as string} 
+                  href={(datos.pdfValuacion || datos.pdf_avaluo) as string} 
                   target="_blank" 
                   rel="noopener noreferrer"
                   className="text-blue-600 hover:text-blue-800 underline"

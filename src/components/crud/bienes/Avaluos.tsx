@@ -90,8 +90,8 @@ export default function Valuacion({ datos, actualizarDatos }: StepProps) {
           <div className="relative">
             <input
               type="url"
-              value={datos.pdf || datos.pdf_avaluo || ''}
-              onChange={(e) => actualizarDatos('pdf', e.target.value)}
+              value={datos.pdfValuacion || datos.pdf_avaluo || ''}
+              onChange={(e) => actualizarDatos('pdfValuacion', e.target.value)}
               className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#676D47] focus:border-transparent transition-all duration-200 text-gray-900 placeholder-gray-400 bg-white"
               placeholder="https://ejemplo.com/avaluo.pdf"
             />
@@ -106,7 +106,7 @@ export default function Valuacion({ datos, actualizarDatos }: StepProps) {
       </div>
 
       {/* Valuation summary */}
-      {(datos.numeroAvaluo || datos.valorSenaladoAvaluo || datos.tipoValuacion || datos.pdf || datos.pdf_avaluo) && (
+      {(datos.numeroAvaluo || datos.valorSenaladoAvaluo || datos.tipoValuacion || datos.pdfValuacion || datos.pdf_avaluo) && (
         <div className="bg-green-50 border border-green-200 rounded-lg p-4">
           <h4 className="font-semibold text-green-800 mb-3">Resumen de Valuación</h4>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
@@ -136,12 +136,12 @@ export default function Valuacion({ datos, actualizarDatos }: StepProps) {
             )}
           </div>
           
-          {(datos.pdf || datos.pdf_avaluo) && (
+          {(datos.pdfValuacion || datos.pdf_avaluo) && (
             <div className="mt-3 pt-3 border-t border-green-200">
               <div className="text-green-700">
                 <p className="font-medium">📎 Archivo PDF</p>
                 <a 
-                  href={datos.pdf || datos.pdf_avaluo} 
+                  href={datos.pdfValuacion || datos.pdf_avaluo} 
                   target="_blank" 
                   rel="noopener noreferrer"
                   className="text-blue-600 hover:text-blue-800 underline"

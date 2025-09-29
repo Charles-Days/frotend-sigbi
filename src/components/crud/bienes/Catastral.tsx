@@ -12,7 +12,7 @@ const getFileName = (url?: string) => {
   }
 };
 
-export default function Catastral({ datos, actualizarDatos, errores, setArchivo }: StepProps) {
+export default function Catastral({ datos, actualizarDatos, setArchivo }: StepProps) {
   return (
     <div className="space-y-8">
       <div className="text-center mb-8">
@@ -135,7 +135,7 @@ export default function Catastral({ datos, actualizarDatos, errores, setArchivo 
                 onChange={async (e) => {
                   const file = e.target.files?.[0];
                   if (!file) return;
-                  setArchivo && setArchivo('catastral:plano_catastral', file);
+                  setArchivo?.('catastral:plano_catastral', file);
                   actualizarDatos('planoCatastral', file.name);
                 }}
               />
@@ -189,17 +189,17 @@ export default function Catastral({ datos, actualizarDatos, errores, setArchivo 
                   const file = e.target.files?.[0];
                   if (!file) return;
                   // backend espera pdf_catastral
-                  setArchivo && setArchivo('catastral:pdf_catastral', file);
-                  actualizarDatos('pdf', file.name);
+                  setArchivo?.('catastral:pdf_catastral', file);
+                  actualizarDatos('pdfCatastral', file.name);
                 }}
               />
               Subir PDF
             </label>
-            {(Boolean(datos.pdf) || Boolean(datos.pdf_catastral)) && (
+            {(Boolean(datos.pdfCatastral) || Boolean(datos.pdf_catastral)) && (
               <div className="flex items-center gap-2 bg-gray-50 border border-gray-200 rounded-md px-3 py-2">
-                <span className="text-sm text-gray-700 truncate max-w-xs">{getFileName(datos.pdf || datos.pdf_catastral)}</span>
-                <a href={(datos.pdf || datos.pdf_catastral) as string} target="_blank" rel="noopener noreferrer" className="text-blue-600 text-sm hover:underline">Ver</a>
-                <button type="button" onClick={() => actualizarDatos('pdf', '')} className="text-red-600 text-sm hover:underline">Quitar</button>
+                <span className="text-sm text-gray-700 truncate max-w-xs">{getFileName(datos.pdfCatastral || datos.pdf_catastral)}</span>
+                <a href={(datos.pdfCatastral || datos.pdf_catastral) as string} target="_blank" rel="noopener noreferrer" className="text-blue-600 text-sm hover:underline">Ver</a>
+                <button type="button" onClick={() => actualizarDatos('pdfCatastral', '')} className="text-red-600 text-sm hover:underline">Quitar</button>
               </div>
             )}
           </div>
@@ -257,7 +257,7 @@ export default function Catastral({ datos, actualizarDatos, errores, setArchivo 
             </div>
           )}
           
-          {(Boolean(datos.planoCatastral) || Boolean(datos.plano_catastral) || Boolean(datos.pdf) || Boolean(datos.pdf_catastral)) && (
+          {(Boolean(datos.planoCatastral) || Boolean(datos.plano_catastral) || Boolean(datos.pdfCatastral) || Boolean(datos.pdf_catastral)) && (
             <div className="mt-3 pt-3 border-t border-yellow-200">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
                 {(Boolean(datos.planoCatastral) || Boolean(datos.plano_catastral)) && (
@@ -273,11 +273,11 @@ export default function Catastral({ datos, actualizarDatos, errores, setArchivo 
                     </a>
                   </div>
                 )}
-                {(Boolean(datos.pdf) || Boolean(datos.pdf_catastral)) && (
+                {(Boolean(datos.pdfCatastral) || Boolean(datos.pdf_catastral)) && (
                   <div className="text-yellow-700">
                     <p className="font-medium">📄 PDF Completo</p>
                     <a 
-                      href={(datos.pdf || datos.pdf_catastral) as string} 
+                      href={(datos.pdfCatastral || datos.pdf_catastral) as string} 
                       target="_blank" 
                       rel="noopener noreferrer"
                       className="text-blue-600 hover:text-blue-800 underline"

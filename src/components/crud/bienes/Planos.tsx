@@ -2,7 +2,7 @@
 
 import { StepProps } from './types';
 
-export default function Catastral({ datos, actualizarDatos, errores }: StepProps) {
+export default function Catastral({ datos, actualizarDatos }: StepProps) {
   return (
     <div className="space-y-8">
       <div className="text-center mb-8">
@@ -164,8 +164,8 @@ export default function Catastral({ datos, actualizarDatos, errores }: StepProps
           <div className="relative">
             <input
               type="url"
-              value={datos.pdf || ''}
-              onChange={(e) => actualizarDatos('pdf', e.target.value)}
+              value={datos.pdfCatastral || ''}
+              onChange={(e) => actualizarDatos('pdfCatastral', e.target.value)}
               className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#676D47] focus:border-transparent transition-all duration-200 text-gray-900 placeholder-gray-400 bg-white"
               placeholder="https://ejemplo.com/catastral-completo.pdf"
             />
@@ -226,7 +226,7 @@ export default function Catastral({ datos, actualizarDatos, errores }: StepProps
             </div>
           )}
           
-          {(datos.planoCatastral || datos.pdf) && (
+          {(datos.planoCatastral || datos.pdfCatastral) && (
             <div className="mt-3 pt-3 border-t border-yellow-200">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
                 {datos.planoCatastral && (
@@ -242,11 +242,11 @@ export default function Catastral({ datos, actualizarDatos, errores }: StepProps
                     </a>
                   </div>
                 )}
-                {datos.pdf && (
+                {datos.pdfCatastral && (
                   <div className="text-yellow-700">
                     <p className="font-medium">📄 PDF Completo</p>
                     <a 
-                      href={datos.pdf} 
+                      href={datos.pdfCatastral} 
                       target="_blank" 
                       rel="noopener noreferrer"
                       className="text-blue-600 hover:text-blue-800 underline"

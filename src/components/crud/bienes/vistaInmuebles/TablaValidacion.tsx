@@ -109,10 +109,6 @@ export default function TablaValidacion({
     setIsModalOpen(true);
   };
 
-  const handleContinuar = (inmueble: Inmueble) => {
-    localStorage.setItem('inmuebleId', inmueble.id);
-    window.location.href = '/bienes/crear';
-  };
 
   const handleAprobar = async (inmueble: Inmueble) => {
     if (!onAprobar) return;

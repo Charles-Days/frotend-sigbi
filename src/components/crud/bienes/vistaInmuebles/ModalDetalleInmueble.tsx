@@ -1,7 +1,91 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import OpenStreetMapEmbed from '@/components/ui/OpenStreetMapEmbed';
+
+interface Juridico {
+  numeroEscritura?: string;
+  volumen?: string;
+  pagina?: string;
+  fedatarioPublico?: string;
+  autoridadEmisora?: string;
+  numeroNotaria?: string;
+  partesIntervienen?: string;
+  fecha?: string;
+  opcionesAdquisicion?: string;
+  areaResguardante?: string;
+  secretariasOrganismosAuxiFideico?: string;
+  superficieEnUso?: string;
+  fechaFirma?: string;
+  vigencia?: string;
+  instrumentoOtorgaUso?: string;
+  destinoInmueble?: string;
+  actoJuridico?: string;
+  archivo_juridico?: string;
+  instrumento_juridico_uso?: string;
+  instrumento_juridico_acredita?: string;
+}
+
+interface NotacionMarginal {
+  notacionMarginal?: boolean;
+  anotacionMarginal?: string;
+  instrumentoObjetoAnotacion?: string;
+  ligaReferencia?: string;
+  relacionMismoRegistro?: string;
+  instrumento_general?: string;
+}
+
+interface OcupacionUso {
+  senalamientoInmueble?: boolean;
+  nombreOcupante?: string;
+  tipoOcupante?: string;
+  espacioDisponibleInmueble?: string;
+}
+
+interface Avaluo {
+  numeroAvaluo?: string;
+  valorSenaladoAvaluo?: number | string;
+  fechaAvaluo?: string;
+  tipoValuacion?: string;
+  pdf_avaluo?: string;
+}
+
+interface Catastral {
+  direccionPlanoCatastral?: string;
+  claveCatastral?: string;
+  valorCatastral?: number | string;
+  baseGravable?: number | string;
+  fechaPlanoCatastral?: string;
+  superficie?: number | string;
+  levantamientoTopografico?: string;
+  fechaLevantamientoTopografico?: string;
+  plano_catastral?: string;
+  pdf_catastral?: string;
+}
+
+interface Registral {
+  folioElectronico?: string;
+  fechaCertificadoLibertad?: string;
+  fechaInscripcionRegistroPublicoPropiedadInmobiliaria?: string;
+  antecedenteRegistral?: string;
+  inscripcionDecreto?: string;
+  certificado_libertad_gravamen?: string;
+  archivo_antecedente_registral?: string;
+}
+
+interface Evidencia {
+  url: string;
+  originalName?: string;
+}
+
+interface Inspeccion {
+  responsableInspeccion?: string;
+  fechaInspeccionFisicaInmueble?: string;
+  fechaProximaInspeccion?: string;
+  informe_inspeccion?: string;
+  evidencias_fotograficas?: Evidencia[];
+  observacionesInspeccion?: string;
+}
 
 interface Inmueble {
   id: string;
@@ -10,6 +94,7 @@ interface Inmueble {
   propietario?: string;
   estado?: string;
   estadoActual?: string;
+  estadoActualInmueble?: string;
   observaciones?: string;
   localizacion?: { municipio?: string } | null;
   completado?: number;
@@ -35,13 +120,13 @@ interface Inmueble {
   coordenadas?: string;
   
   // Relaciones
-  juridico?: any;
-  notacionMarginal?: any;
-  ocupacionUso?: any;
-  valuaciones?: any[];
-  catastrales?: any[];
-  registrales?: any[];
-  inspecciones?: any[];
+  juridico?: Juridico;
+  notacionMarginal?: NotacionMarginal;
+  ocupacionUso?: OcupacionUso;
+  valuaciones?: Avaluo[];
+  catastrales?: Catastral[];
+  registrales?: Registral[];
+  inspecciones?: Inspeccion[];
 }
 
 interface ModalDetalleInmuebleProps {
@@ -56,7 +141,7 @@ export default function ModalDetalleInmueble({ inmueble, isOpen, onClose }: Moda
   const [error, setError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<string>('basica');
 
-  const cargarDatosCompletos = async () => {
+  const cargarDatosCompletos = useCallback(async () => {
     if (!inmueble?.id) return;
     
     try {
@@ -76,7 +161,7 @@ export default function ModalDetalleInmueble({ inmueble, isOpen, onClose }: Moda
       console.log('[ModalDetalleInmueble] Datos completos cargados:', data);
       
       if (data.success && data.data) {
-        setInmuebleCompleto(data.data);
+        setInmuebleCompleto(data.data as Inmueble);
       } else {
         throw new Error(data.message || 'Error al obtener los datos');
       }
@@ -86,14 +171,14 @@ export default function ModalDetalleInmueble({ inmueble, isOpen, onClose }: Moda
     } finally {
       setLoading(false);
     }
-  };
+  }, [inmueble?.id]);
 
   // Cargar datos completos cuando se abre el modal
   useEffect(() => {
     if (isOpen && inmueble?.id) {
       cargarDatosCompletos();
     }
-  }, [isOpen, inmueble?.id]);
+  }, [isOpen, cargarDatosCompletos, inmueble?.id]);
 
   if (!isOpen || !inmueble) return null;
 
@@ -198,7 +283,7 @@ export default function ModalDetalleInmueble({ inmueble, isOpen, onClose }: Moda
                   </div>
                   <div className="space-y-2">
                     <p className="text-sm"><span className="font-medium">Construcción:</span> {datosAMostrar.construccion || '—'}</p>
-                    <p className="text-sm"><span className="font-medium">Estado Actual:</span> {(datosAMostrar as any).estadoActualInmueble || '—'}</p>
+                    <p className="text-sm"><span className="font-medium">Estado Actual:</span> {datosAMostrar.estadoActualInmueble || '—'}</p>
                     <p className="text-sm"><span className="font-medium">Tipo de Superficie:</span> {datosAMostrar.tipoSuperficie || '—'}</p>
                     <p className="text-sm"><span className="font-medium">Medidas y Colindancias:</span> {datosAMostrar.medidasColindancias || '—'}</p>
                     <p className="text-sm"><span className="font-medium">Ubicación Registral:</span> {datosAMostrar.ubicacionRegistral || '—'}</p>
@@ -472,7 +557,7 @@ export default function ModalDetalleInmueble({ inmueble, isOpen, onClose }: Moda
                         <div className="mt-4">
                           <p className="text-sm font-medium text-gray-700 mb-2">Evidencias Fotográficas ({inspeccion.evidencias_fotograficas.length}):</p>
                           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2">
-                            {inspeccion.evidencias_fotograficas.map((evidencia: any, idx: number) => (
+                            {inspeccion.evidencias_fotograficas.map((evidencia: Evidencia, idx: number) => (
                               <a key={idx} href={evidencia.url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center px-2 py-1 rounded text-xs bg-blue-100 text-blue-800 hover:bg-blue-200 truncate">
                                 📷 {evidencia.originalName || `Evidencia ${idx + 1}`}
                               </a>

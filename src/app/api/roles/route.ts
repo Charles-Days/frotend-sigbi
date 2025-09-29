@@ -1,9 +1,9 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 
 const API_BASE_URL = process.env.API_BASE_URL || "http://localhost:3001";
 
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
     const token = (await cookies()).get("access_token")?.value;
 
@@ -24,7 +24,7 @@ export async function GET(request: NextRequest) {
 
     const data = await res.json().catch(() => ({}));
     return NextResponse.json(data, { status: res.status });
-  } catch (error) {
+  } catch {
     return NextResponse.json(
       { message: "Internal server error", statusCode: 500 },
       { status: 500 }

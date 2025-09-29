@@ -5,7 +5,7 @@ const API_BASE_URL = process.env.API_BASE_URL || "http://localhost:3001";
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const body = await request.json();
@@ -29,8 +29,9 @@ export async function POST(
       );
     }
 
+    const { id } = await params;
     const response = await fetch(
-      `${API_BASE_URL}/caracteristicas-inmueble/${params.id}/cambiar-estado-aprobacion`,
+      `${API_BASE_URL}/caracteristicas-inmueble/${id}/cambiar-estado-aprobacion`,
       {
         method: "POST",
         headers: {

@@ -24,7 +24,7 @@ export async function POST(request: Request) {
 
     const data = await res.json().catch(() => ({}));
     return NextResponse.json(data, { status: res.status });
-  } catch (error) {
+  } catch {
     return NextResponse.json(
       { success: false, message: "Upload failed" },
       { status: 500 }

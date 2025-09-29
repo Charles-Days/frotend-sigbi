@@ -2,7 +2,7 @@
 
 import { StepProps } from './types';
 
-export default function Documentos({ datos, actualizarDatos, errores }: StepProps) {
+export default function Documentos({ datos, actualizarDatos }: StepProps) {
   return (
     <div className="space-y-8">
       <div className="text-center mb-8">

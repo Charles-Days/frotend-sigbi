@@ -1,7 +1,6 @@
 'use client';
 
 import { StepProps } from './types';
-import { uploadFile } from '@/services/api';
 
 const getFileName = (url?: string) => {
   if (!url) return '';
@@ -13,7 +12,7 @@ const getFileName = (url?: string) => {
   }
 };
 
-export default function NotacionMarginal({ datos, actualizarDatos, errores, setArchivo }: StepProps) {
+export default function NotacionMarginal({ datos, actualizarDatos, setArchivo }: StepProps) {
   return (
     <div className="space-y-8">
       <div className="text-center mb-8">
@@ -104,16 +103,16 @@ export default function NotacionMarginal({ datos, actualizarDatos, errores, setA
                     onChange={async (e) => {
                       const file = e.target.files?.[0];
                       if (!file) return;
-                  setArchivo && setArchivo('notacion_marginal:instrumento_general', file);
+                  setArchivo?.('notacion_marginal:instrumento_general', file);
                   actualizarDatos('instrumentoGeneral', file.name);
                     }}
                   />
                   Subir instrumento
                 </label>
-                {(datos.instrumentoGeneral || (datos as any).instrumento_general) && (
+                {(datos.instrumentoGeneral || (datos as { instrumento_general?: string }).instrumento_general) && (
                   <div className="flex items-center gap-2 bg-gray-50 border border-gray-200 rounded-md px-3 py-2">
-                    <span className="text-sm text-gray-700 truncate max-w-xs">{getFileName(datos.instrumentoGeneral || (datos as any).instrumento_general)}</span>
-                    <a href={datos.instrumentoGeneral || (datos as any).instrumento_general} target="_blank" rel="noopener noreferrer" className="text-blue-600 text-sm hover:underline">Ver</a>
+                    <span className="text-sm text-gray-700 truncate max-w-xs">{getFileName(datos.instrumentoGeneral || (datos as { instrumento_general?: string }).instrumento_general)}</span>
+                    <a href={datos.instrumentoGeneral || (datos as { instrumento_general?: string }).instrumento_general} target="_blank" rel="noopener noreferrer" className="text-blue-600 text-sm hover:underline">Ver</a>
                     <button type="button" onClick={() => actualizarDatos('instrumentoGeneral', '')} className="text-red-600 text-sm hover:underline">Quitar</button>
                   </div>
                 )}
@@ -156,13 +155,13 @@ export default function NotacionMarginal({ datos, actualizarDatos, errores, setA
             {datos.relacionMismoRegistro && (
               <p>🔗 <strong>Relación:</strong> {datos.relacionMismoRegistro}</p>
             )}
-            {((datos.instrumentoGeneral || (datos as any).instrumento_general) || datos.ligaReferencia) && (
+            {((datos.instrumentoGeneral || (datos as { instrumento_general?: string }).instrumento_general) || datos.ligaReferencia) && (
               <div className="pt-2 border-t border-amber-200">
                 <h5 className="font-medium text-amber-700 mb-1">Documentos de Referencia</h5>
-                {(datos.instrumentoGeneral || (datos as any).instrumento_general) && (
+                {(datos.instrumentoGeneral || (datos as { instrumento_general?: string }).instrumento_general) && (
                   <p className="text-amber-600">
-                    📎 <a 
-                      href={datos.instrumentoGeneral || (datos as any).instrumento_general} 
+                    📎 <a
+                      href={datos.instrumentoGeneral || (datos as { instrumento_general?: string }).instrumento_general} 
                       target="_blank" 
                       rel="noopener noreferrer"
                       className="text-blue-600 hover:text-blue-800 underline"

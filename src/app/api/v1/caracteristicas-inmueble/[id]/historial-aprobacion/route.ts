@@ -5,7 +5,7 @@ const API_BASE_URL = process.env.API_BASE_URL || "http://localhost:3001";
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     // Obtener token de la cookie access_token
@@ -19,8 +19,9 @@ export async function GET(
       );
     }
 
+    const { id } = await params;
     const response = await fetch(
-      `${API_BASE_URL}/caracteristicas-inmueble/${params.id}/historial-aprobacion`,
+      `${API_BASE_URL}/caracteristicas-inmueble/${id}/historial-aprobacion`,
       {
         method: "GET",
         headers: {

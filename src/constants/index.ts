@@ -5,7 +5,7 @@
 export * from "./estadosMunicipios";
 
 // Menús y constantes de la aplicación
-export * from "./index.tsx";
+export * from "./menuItems";
 
 // Aquí puedes agregar más constantes según necesites
 // Ejemplo:

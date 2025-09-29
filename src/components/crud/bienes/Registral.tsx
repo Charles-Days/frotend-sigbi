@@ -1,7 +1,6 @@
 'use client';
 
 import { StepProps } from './types';
-import { uploadFile } from '@/services/api';
 
 const getFileName = (url?: string) => {
   if (!url) return '';
@@ -13,7 +12,7 @@ const getFileName = (url?: string) => {
   }
 };
 
-export default function Registral({ datos, actualizarDatos, errores, setArchivo }: StepProps) {
+export default function Registral({ datos, actualizarDatos, setArchivo }: StepProps) {
   return (
     <div className="space-y-8">
       <div className="text-center mb-8">
@@ -64,7 +63,7 @@ export default function Registral({ datos, actualizarDatos, errores, setArchivo 
                 onChange={async (e) => {
                   const file = e.target.files?.[0];
                   if (!file) return;
-                  setArchivo && setArchivo('registral:certificado_libertad_gravamen', file);
+                  setArchivo?.('registral:certificado_libertad_gravamen', file);
                   actualizarDatos('certificadoLibertadGravamen', file.name);
                 }}
               />
@@ -92,7 +91,7 @@ export default function Registral({ datos, actualizarDatos, errores, setArchivo 
                 onChange={async (e) => {
                   const file = e.target.files?.[0];
                   if (!file) return;
-                  setArchivo && setArchivo('registral:archivo_antecedente_registral', file);
+                  setArchivo?.('registral:archivo_antecedente_registral', file);
                   actualizarDatos('archivoAntecedenteRegistral', file.name);
                 }}
               />

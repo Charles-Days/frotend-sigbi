@@ -391,7 +391,7 @@ export default function CrearBienPage() {
           'valorSenaladoAvaluo',
           'fechaAvaluo',
           'tipoValuacion',
-          'pdf',
+          'pdfValuacion',
         ]);
         return { paso: 'valuacion', inmuebleId, datosValuacion };
       }
@@ -731,7 +731,7 @@ export default function CrearBienPage() {
   // Log de snapshot de datos del paso actual al cambiar de paso
   useEffect(() => {
     // sin logs
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+   
   }, [pasoActual]);
 
   const renderPaso = () => {

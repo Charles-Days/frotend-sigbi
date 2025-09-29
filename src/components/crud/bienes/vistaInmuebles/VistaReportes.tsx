@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect } from 'react';
 import AdvancedFilters from '@/components/ui/AdvancedFilters';
 import TablaInmuebles from './TablaInmuebles';
 import ExportSection from '@/components/ui/ExportSection';
@@ -32,12 +32,11 @@ interface VistaReportesProps {
   onCargarBienes: () => void;
 }
 
-export default function VistaReportes({ 
-  bienes, 
-  total, 
-  loading, 
-  error, 
-  onCargarBienes 
+export default function VistaReportes({
+  bienes,
+  total,
+  loading,
+  error
 }: VistaReportesProps) {
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [filters, setFilters] = useState<Record<string, unknown>>({});
@@ -47,11 +46,6 @@ export default function VistaReportes({
   const [currentPage, setCurrentPage] = useState<number>(0);
   const [pageSize, setPageSize] = useState<number>(50);
 
-  const params = useMemo(() => {
-    const baseParams: Record<string, unknown> = {};
-    if (searchTerm) baseParams.search = searchTerm;
-    return baseParams;
-  }, [searchTerm]);
 
   // Funciones de manejo de eventos
   const handleFiltersChange = (newFilters: Record<string, unknown>) => {
