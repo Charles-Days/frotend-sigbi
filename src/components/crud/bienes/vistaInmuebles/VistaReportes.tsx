@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import AdvancedFilters from '@/components/ui/AdvancedFilters';
 import TablaInmuebles from './TablaInmuebles';
 import ExportSection from '@/components/ui/ExportSection';
@@ -45,6 +45,7 @@ export default function VistaReportes({
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
   const [currentPage, setCurrentPage] = useState<number>(0);
   const [pageSize, setPageSize] = useState<number>(50);
+  const isProgrammaticSelection = useRef(false);
 
 
   // Funciones de manejo de eventos
@@ -73,15 +74,29 @@ export default function VistaReportes({
   };
 
   const handleSelectionChange = (ids: string[]) => {
-    setSelectedIds(ids);
+    console.log('[VistaReportes] onSelectionChange (desde TablaInmuebles):', ids.length, ids);
+    if (isProgrammaticSelection.current) {
+      // Ignorar eco del hijo cuando el padre inició la selección
+      isProgrammaticSelection.current = false;
+      return;
+    }
+    setSelectedIds((prev) => {
+      const sameLength = ids.length === prev.length;
+      const sameSet = sameLength && ids.every(id => prev.includes(id));
+      return sameSet ? prev : ids;
+    });
   };
 
   const handleSelectAll = () => {
     const allIds = bienes.map(bien => bien.id);
+    console.log('[VistaReportes] handleSelectAll click. bienes:', bienes.length, 'ids seleccionados:', allIds.length);
+    isProgrammaticSelection.current = true;
     setSelectedIds(allIds);
   };
 
   const handleDeselectAll = () => {
+    console.log('[VistaReportes] handleDeselectAll click');
+    isProgrammaticSelection.current = true;
     setSelectedIds([]);
   };
 
@@ -97,12 +112,14 @@ export default function VistaReportes({
       if (selectedIds.length === 0) {
         return;
       }
-
-      const endpoint = format === 'excel' ? '/api/inmuebles/export/excel' : '/api/inmuebles/export/pdf';
+      const selectedFields = JSON.parse(sessionStorage.getItem('export_selected_fields') || '[]');
+      const endpoint = format === 'excel'
+        ? '/api/inmuebles/export/excel'
+        : '/api/inmuebles/export/pdf';
       const response = await fetch(endpoint, { 
         method: 'POST', 
         headers: { 'Content-Type': 'application/json' }, 
-        body: JSON.stringify({ selectedIds, filters, searchTerm }) 
+        body: JSON.stringify({ selectedIds, filters, searchTerm, selectedFields }) 
       });
       if (!response.ok) throw new Error('Error al exportar');
       const blob = await response.blob();
@@ -119,11 +136,14 @@ export default function VistaReportes({
 
   const handleExportAll = async (format: 'excel' | 'pdf') => {
     try {
-      const endpoint = format === 'excel' ? '/api/inmuebles/export/excel' : '/api/inmuebles/export/pdf';
+      const selectedFields = JSON.parse(sessionStorage.getItem('export_selected_fields') || '[]');
+      const endpoint = format === 'excel'
+        ? '/api/inmuebles/export/excel'
+        : '/api/inmuebles/export/pdf';
       const response = await fetch(endpoint, { 
         method: 'POST', 
         headers: { 'Content-Type': 'application/json' }, 
-        body: JSON.stringify({ filters, searchTerm }) 
+        body: JSON.stringify({ filters, searchTerm, selectedFields }) 
       });
       if (!response.ok) throw new Error('Error al exportar');
       const blob = await response.blob();
@@ -150,6 +170,7 @@ export default function VistaReportes({
 
   // Limpiar selección cuando cambien los datos
   useEffect(() => {
+    console.log('[VistaReportes] bienes cambiaron. Limpio selección. bienes:', bienes.length);
     setSelectedIds([]);
   }, [bienes]);
 
@@ -206,6 +227,7 @@ export default function VistaReportes({
         onSort={handleSort}
         onRowClick={handleRowClick}
         onSelectionChange={handleSelectionChange}
+        selectedIdsExternal={selectedIds}
         sortField={sortField}
         sortOrder={sortOrder}
       />

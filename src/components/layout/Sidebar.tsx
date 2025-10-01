@@ -346,7 +346,7 @@ export default function Sidebar({ collapsed = false, onToggle }: SidebarProps) {
                     onClick={closeTooltip}
                     className={`flex items-center space-x-3 px-3 py-2 text-sm transition-all duration-200 ease-out hover:bg-gray-50 hover:text-[#676D47] hover:translate-x-1 hover:shadow-sm ${
                       isActive(subItem.href || '')
-                        ? 'bg-gradient-to-r from-[#676D47] to-[#5A6140] bg-opacity-10 text-[#676D47] font-medium'
+                        ? 'bg-[#676D47]/10 text-[#676D47] font-medium border-l-2 border-[#676D47]'
                         : 'text-gray-700'
                     }`}
                     style={{

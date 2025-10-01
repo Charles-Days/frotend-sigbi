@@ -235,13 +235,15 @@ export default function DatosBasicos({ datos, actualizarDatos, errores }: StepPr
           <label className="block text-sm font-bold text-gray-900">
             Tipo de Superficie
           </label>
-          <input
-            type="text"
+          <select
             value={datos.tipoSuperficie || ''}
             onChange={(e) => actualizarDatos('tipoSuperficie', e.target.value)}
-            className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#676D47] focus:border-transparent transition-all duration-200 text-gray-900 placeholder-gray-400 bg-white"
-            placeholder="Ej: Metros, Hectáreas"
-          />
+            className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#676D47] focus:border-transparent transition-all duration-200 text-gray-900 bg-white"
+          >
+            <option value="">Seleccionar tipo</option>
+            <option value="Hectareas">Hectáreas</option>
+            <option value="Metros">Metros</option>
+          </select>
         </div>
 
         <div className="space-y-2">

@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useCallback } from 'react';
 import TablaValidacion from '@/components/crud/bienes/vistaInmuebles/TablaValidacion';
+import Toast from '@/components/ui/Toast';
 
 export default function BienesValidacionPage() {
   type Inmueble = {
@@ -136,6 +137,7 @@ export default function BienesValidacionPage() {
   const [total, setTotal] = useState<number>(0);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
+  const [toast, setToast] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
 
   // Funciones de aprobación
   const handleAprobar = async (inmuebleId: string, comentarios?: string) => {
@@ -159,7 +161,7 @@ export default function BienesValidacionPage() {
       const data = await response.json();
       
       if (data.success) {
-        alert('Inmueble aprobado exitosamente');
+        setToast({ type: 'success', message: 'Inmueble aprobado exitosamente' });
         // Recargar la lista
         await cargarBienes();
       } else {
@@ -192,7 +194,7 @@ export default function BienesValidacionPage() {
       const data = await response.json();
       
       if (data.success) {
-        alert('Inmueble rechazado exitosamente');
+        setToast({ type: 'success', message: 'Inmueble rechazado exitosamente' });
         // Recargar la lista
         await cargarBienes();
       } else {
@@ -276,6 +278,9 @@ export default function BienesValidacionPage() {
   return (
     <div className="min-h-screen" style={{backgroundColor: '#F5F1EE'}}>
       <div className="max-w-7xl mx-auto p-6">
+        {toast && (
+          <Toast type={toast.type} message={toast.message} onClose={() => setToast(null)} />
+        )}
         <div className="space-y-6">
           {/* Header */}
           <div className="flex justify-between items-center">
@@ -315,6 +320,7 @@ export default function BienesValidacionPage() {
             loading={loading}
             onAprobar={handleAprobar}
             onRechazar={handleRechazar}
+            showSelection={false}
           />
         </div>
       </div>

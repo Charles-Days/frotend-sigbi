@@ -154,6 +154,7 @@ export default function VistaInmuebles({
         onSelectionChange={handleSelectionChange}
         sortField={sortField}
         sortOrder={sortOrder}
+        showSelection={false}
       />
 
       {/* Paginación */}

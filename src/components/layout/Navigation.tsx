@@ -14,7 +14,13 @@ export default function Navigation() {
   };
 
   return (
-    <nav className="bg-[#F5F1EE] border-b border-gray-200 relative z-20" style={{ boxShadow: '0 1px 3px rgba(0, 0, 0, 0.05)' }}>
+    <nav 
+      className="border-b border-gray-200 relative z-20" 
+      style={{ 
+        background: 'linear-gradient(90deg, rgba(245, 241, 238, 1) 0%, rgba(245, 241, 238, 1) 40%, rgba(245, 241, 238, 0.95) 60%, rgba(245, 241, 238, 0.8) 80%, rgba(245, 241, 238, 0.6) 100%)',
+        boxShadow: 'inset -1px 0 0 rgba(255, 255, 255, 0.2), 1px 0 3px rgba(0, 0, 0, 0.05), 4px 0 15px rgba(0, 0, 0, 0.08)'
+      }}
+    >
       <div className="w-full px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center py-4">
           {/* Logo y Nombre del Sistema - Lado Izquierdo */}

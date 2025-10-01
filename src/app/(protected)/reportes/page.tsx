@@ -126,8 +126,26 @@ export default function ReportesPage() {
       const completitudData = await res.json();
       const registros = completitudData?.data?.registros || [];
       
-      // Para reportes: mostrar TODOS los registros (no solo los completos)
-      const todosLosRegistros = registros;
+      // Filtrar únicamente inmuebles 100% completos y con estado de aprobación APROBADO o PUBLICADO
+      interface CompletitudRegistro {
+        inmuebleId: string;
+        numeroRegistro: string;
+        propietario: string | null;
+        estado: string | null;
+        municipio: string | null;
+        estadoActualInmueble: string | null;
+        estadoAprobacion: string | null;
+        tipoInmueble: string | null;
+        completado: number | string;
+        ultimaActualizacion: string;
+        [key: string]: unknown;
+      }
+
+      const registrosFiltrados = (registros as CompletitudRegistro[]).filter((r) => {
+        const completadoNum = typeof r?.completado === 'number' ? r.completado : parseInt(String(r?.completado || 0), 10);
+        const estadoAprob = String(r?.estadoAprobacion || '').toUpperCase();
+        return completadoNum === 100 && (estadoAprob === 'APROBADO' || estadoAprob === 'PUBLICADO');
+      });
       
       // Mapear al formato esperado por la tabla
       type ApiRegistro = {
@@ -139,6 +157,7 @@ export default function ReportesPage() {
         tipoInmueble?: string;
         estado?: string;
         municipio?: string;
+        estadoAprobacion?: string;
         ultimaActualizacion: string;
         camposEspecificos?: Record<string, string | null>;
         camposFaltantes?: string[];
@@ -147,7 +166,7 @@ export default function ReportesPage() {
         pasos?: Record<string, boolean>;
       };
       
-      const bienesMapeados = (todosLosRegistros as ApiRegistro[]).map((registro) => ({
+      const bienesMapeados = (registrosFiltrados as ApiRegistro[]).map((registro) => ({
         id: registro.inmuebleId,
         numeroRegistro: registro.numeroRegistro,
         propietario: registro.propietario,
@@ -156,6 +175,7 @@ export default function ReportesPage() {
         tipoInmueble: registro.tipoInmueble,
         estado: registro.estado,
         municipio: registro.municipio,
+        // opcional: podrías mostrar estadoAprobacion si tu tabla lo soporta
         createdAt: registro.ultimaActualizacion,
         updatedAt: registro.ultimaActualizacion,
         // específicos

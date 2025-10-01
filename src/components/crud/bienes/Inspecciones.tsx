@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { StepProps } from './types';
 // import { uploadFile, uploadMultiple } from '@/services/api';
 
@@ -18,6 +18,7 @@ export default function Inspecciones({ datos, actualizarDatos, setArchivo }: Ste
   useEffect(() => {
     // sin logs
   }, [datos]);
+  const [cola, setCola] = useState<{ evidencias?: string[]; informe?: string[] }>({});
   const calcularDiasRestantes = (fecha: string) => {
     const fechaProxima = new Date(fecha);
     const hoy = new Date();
@@ -101,6 +102,7 @@ export default function Inspecciones({ datos, actualizarDatos, setArchivo }: Ste
                   if (setArchivo) {
                     setArchivo('inspeccion:evidencias_fotograficas', files as File[]);
                   }
+                  setCola((prev) => ({ ...prev, evidencias: [ ...(prev.evidencias || []), ...files.map((f) => f.name) ] }));
                 }}
               />
               Subir evidencias
@@ -110,17 +112,39 @@ export default function Inspecciones({ datos, actualizarDatos, setArchivo }: Ste
           {Array.isArray(fotosBackend) && fotosBackend.length > 0 && (
             <div className="mt-3 grid grid-cols-1 md:grid-cols-2 gap-2">
               {fotosBackend.map((evidencia: { url: string; originalName?: string }, i: number) => (
-                <div key={i} className="flex items-center justify-between bg-gray-50 border border-gray-200 rounded-md px-3 py-2">
-                  <span className="text-sm text-gray-700 truncate mr-2">
-                    {evidencia.originalName || getFileName(evidencia.url)}
-                  </span>
+                <div key={i} className="flex items-center justify-between bg-gradient-to-r from-pink-50 to-rose-50 border border-pink-200 rounded-lg px-4 py-3 shadow-sm">
                   <div className="flex items-center gap-3">
-                    <a href={evidencia.url} target="_blank" rel="noopener noreferrer" className="text-blue-600 text-sm hover:underline">Ver</a>
-                    <button type="button" className="text-red-600 text-sm hover:underline" onClick={() => {
+                    <div className="w-8 h-8 bg-pink-100 rounded-full flex items-center justify-center">
+                      <svg className="w-4 h-4 text-pink-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                      </svg>
+                    </div>
+                    <span className="text-sm font-medium text-gray-800 truncate max-w-xs">
+                      {evidencia.originalName || getFileName(evidencia.url)}
+                    </span>
+                  </div>
+                  <button 
+                    type="button" 
+                    className="w-8 h-8 bg-red-100 hover:bg-red-200 rounded-full flex items-center justify-center transition-colors duration-200"
+                    onClick={() => {
                       // Remover de la lista (esto requeriría una llamada al backend)
                       console.log('Remover evidencia:', evidencia.url);
-                    }}>Quitar</button>
-                  </div>
+                    }}
+                    title="Quitar evidencia"
+                  >
+                    <svg className="w-4 h-4 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+          {Array.isArray(cola.evidencias) && cola.evidencias.length > 0 && (
+            <div className="mt-3 grid grid-cols-1 md:grid-cols-2 gap-2">
+              {cola.evidencias.map((n, i) => (
+                <div key={i} className="flex items-center justify-between bg-gray-50 border border-gray-200 rounded-md px-3 py-2">
+                  <span className="text-sm text-gray-700 truncate mr-2">En cola: {n}</span>
                 </div>
               ))}
             </div>
@@ -156,15 +180,40 @@ export default function Inspecciones({ datos, actualizarDatos, setArchivo }: Ste
                   if (setArchivo) {
                     setArchivo('inspeccion:informe_inspeccion', file);
                   }
+                  setCola((prev) => ({ ...prev, informe: [ ...(prev.informe || []), file.name ] }));
                 }}
               />
               Subir informe
             </label>
             {(datos.informeInspeccion || datos.informe_inspeccion) && (
-              <div className="flex items-center gap-2 bg-gray-50 border border-gray-200 rounded-md px-3 py-2">
-                <span className="text-sm text-gray-700 truncate max-w-xs">{getFileName((datos.informeInspeccion || datos.informe_inspeccion) as string)}</span>
-                <a href={(datos.informeInspeccion || datos.informe_inspeccion) as string} target="_blank" rel="noopener noreferrer" className="text-blue-600 text-sm hover:underline">Ver</a>
-                <button type="button" onClick={() => actualizarDatos('informeInspeccion', '')} className="text-red-600 text-sm hover:underline">Quitar</button>
+              <div className="flex items-center justify-between bg-gradient-to-r from-indigo-50 to-purple-50 border border-indigo-200 rounded-lg px-4 py-3 shadow-sm">
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 bg-indigo-100 rounded-full flex items-center justify-center">
+                    <svg className="w-4 h-4 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                  </div>
+                  <span className="text-sm font-medium text-gray-800 truncate max-w-xs">{getFileName((datos.informeInspeccion || datos.informe_inspeccion) as string)}</span>
+                </div>
+                <button 
+                  type="button" 
+                  onClick={() => actualizarDatos('informeInspeccion', '')} 
+                  className="w-8 h-8 bg-red-100 hover:bg-red-200 rounded-full flex items-center justify-center transition-colors duration-200"
+                  title="Quitar archivo"
+                >
+                  <svg className="w-4 h-4 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+            )}
+            {Array.isArray(cola.informe) && cola.informe.length > 0 && (
+              <div className="flex flex-col gap-2 mt-2">
+                {cola.informe.map((n, i) => (
+                  <div key={i} className="flex items-center gap-2 bg-gray-50 border border-gray-200 rounded-md px-3 py-2">
+                    <span className="text-xs text-gray-700 truncate max-w-xs">En cola: {n}</span>
+                  </div>
+                ))}
               </div>
             )}
           </div>

@@ -11,6 +11,7 @@ interface Inmueble {
   propietario?: string;
   estado?: string;
   estadoActual?: string;
+  municipio?: string;
   observaciones?: string;
   localizacion?: { municipio?: string } | null;
   completado?: number;
@@ -38,6 +39,7 @@ interface TablaValidacionProps {
   enableRowClick?: boolean;
   onAprobar?: (inmuebleId: string, comentarios?: string) => Promise<void>;
   onRechazar?: (inmuebleId: string, comentarios?: string) => Promise<void>;
+  showSelection?: boolean;
 }
 
 export default function TablaValidacion({
@@ -51,12 +53,14 @@ export default function TablaValidacion({
   enableRowClick = true,
   onAprobar,
   onRechazar,
+  showSelection = true,
 }: TablaValidacionProps) {
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [selectAll, setSelectAll] = useState(false);
   const [selectedInmueble, setSelectedInmueble] = useState<Inmueble | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [processingIds, setProcessingIds] = useState<Set<string>>(new Set());
+  const [actionModal, setActionModal] = useState<{ open: boolean; mode: 'aprobar' | 'rechazar'; inmueble: Inmueble | null; comentarios: string; error?: string }>(() => ({ open: false, mode: 'aprobar', inmueble: null, comentarios: '' }));
 
   // Sincronizar con el estado del componente padre
   useEffect(() => {
@@ -110,43 +114,14 @@ export default function TablaValidacion({
   };
 
 
-  const handleAprobar = async (inmueble: Inmueble) => {
+  const handleAprobar = (inmueble: Inmueble) => {
     if (!onAprobar) return;
-    
-    const comentarios = prompt('Comentarios de aprobación (opcional):');
-    if (comentarios === null) return; // Usuario canceló
-    
-    setProcessingIds(prev => new Set(prev).add(inmueble.id));
-    try {
-      await onAprobar(inmueble.id, comentarios || undefined);
-    } finally {
-      setProcessingIds(prev => {
-        const newSet = new Set(prev);
-        newSet.delete(inmueble.id);
-        return newSet;
-      });
-    }
+    setActionModal({ open: true, mode: 'aprobar', inmueble, comentarios: '' });
   };
 
-  const handleRechazar = async (inmueble: Inmueble) => {
+  const handleRechazar = (inmueble: Inmueble) => {
     if (!onRechazar) return;
-    
-    const comentarios = prompt('Motivo del rechazo (requerido):');
-    if (!comentarios || comentarios.trim() === '') {
-      alert('Debe proporcionar un motivo para el rechazo');
-      return;
-    }
-    
-    setProcessingIds(prev => new Set(prev).add(inmueble.id));
-    try {
-      await onRechazar(inmueble.id, comentarios);
-    } finally {
-      setProcessingIds(prev => {
-        const newSet = new Set(prev);
-        newSet.delete(inmueble.id);
-        return newSet;
-      });
-    }
+    setActionModal({ open: true, mode: 'rechazar', inmueble, comentarios: '' });
   };
 
   const getEstadoColor = (estado: string) => {
@@ -241,16 +216,18 @@ export default function TablaValidacion({
           <table className="min-w-full">
             <thead>
               <tr className="border-b border-gray-100">
-                <th className="px-6 py-4 text-left">
-                  <div className="flex items-center">
-                    <input
-                      type="checkbox"
-                      checked={selectAll}
-                      onChange={(e) => handleSelectAll(e.target.checked)}
-                      className="h-4 w-4 text-[#676D47] focus:ring-[#676D47] border-gray-300 rounded"
-                    />
-                  </div>
-                </th>
+                {showSelection && (
+                  <th className="px-6 py-4 text-left">
+                    <div className="flex items-center">
+                      <input
+                        type="checkbox"
+                        checked={selectAll}
+                        onChange={(e) => handleSelectAll(e.target.checked)}
+                        className="h-4 w-4 text-[#676D47] focus:ring-[#676D47] border-gray-300 rounded"
+                      />
+                    </div>
+                  </th>
+                )}
                 <th 
                   className="px-6 py-4 text-left text-sm font-semibold text-gray-700 cursor-pointer hover:text-gray-900 transition-colors"
                   onClick={() => handleSort('numeroRegistro')}
@@ -308,14 +285,16 @@ export default function TablaValidacion({
                   className={`border-b border-gray-50 hover:bg-gray-50/50 transition-colors ${enableRowClick ? 'cursor-pointer' : 'cursor-default'}`}
                   onClick={enableRowClick ? () => onRowClick?.(inmueble) : undefined}
                 >
-                  <td className="px-6 py-5" onClick={(e) => e.stopPropagation()}>
-                    <input
-                      type="checkbox"
-                      checked={selectedIds.includes(inmueble.id)}
-                      onChange={(e) => handleSelectRow(inmueble.id, e.target.checked)}
-                      className="h-4 w-4 text-[#676D47] focus:ring-[#676D47] border-gray-300 rounded"
-                    />
-                  </td>
+                  {showSelection && (
+                    <td className="px-6 py-5" onClick={(e) => e.stopPropagation()}>
+                      <input
+                        type="checkbox"
+                        checked={selectedIds.includes(inmueble.id)}
+                        onChange={(e) => handleSelectRow(inmueble.id, e.target.checked)}
+                        className="h-4 w-4 text-[#676D47] focus:ring-[#676D47] border-gray-300 rounded"
+                      />
+                    </td>
+                  )}
                   <td className="px-6 py-5">
                     <div>
                       <div className="text-sm font-medium text-gray-900">
@@ -338,7 +317,7 @@ export default function TablaValidacion({
                   </td>
                   <td className="px-6 py-5">
                     <span className="text-sm text-gray-900">
-                      {inmueble.localizacion?.municipio || inmueble.camposEspecificos?.['Municipio'] || '—'}
+                      {inmueble.municipio || inmueble.localizacion?.municipio || inmueble.camposEspecificos?.['Municipio'] || '—'}
                     </span>
                   </td>
                   <td className="px-6 py-5">
@@ -447,7 +426,7 @@ export default function TablaValidacion({
         </div>
       </div>
 
-      {/* Modal de Detalle */}
+    {/* Modal de Detalle */}
       <ModalDetalleInmueble
         inmueble={selectedInmueble}
         isOpen={isModalOpen}
@@ -456,6 +435,64 @@ export default function TablaValidacion({
           setSelectedInmueble(null);
         }}
       />
+
+    {/* Modal de Aprobación/Rechazo */}
+    {actionModal.open && (
+      <div className="fixed inset-0 z-50 flex items-center justify-center">
+        <div className="absolute inset-0 bg-black/30" onClick={() => setActionModal({ open: false, mode: 'aprobar', inmueble: null, comentarios: '' })}></div>
+        <div className="relative bg-white w-full max-w-md rounded-xl shadow-2xl border border-gray-200 p-6">
+          <h3 className="text-lg font-semibold text-gray-900 mb-3">
+            {actionModal.mode === 'aprobar' ? 'Aprobar inmueble' : 'Rechazar inmueble'}
+          </h3>
+          <p className="text-sm text-gray-600 mb-3">
+            {actionModal.mode === 'aprobar' ? 'Comentarios de aprobación (opcional):' : 'Motivo del rechazo (requerido):'}
+          </p>
+          <textarea
+            className="w-full border rounded-lg p-3 text-sm text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#676D47] focus:border-[#676D47]"
+            rows={4}
+            value={actionModal.comentarios}
+            placeholder={actionModal.mode === 'aprobar' ? 'Escribe comentarios (opcional)...' : 'Escribe el motivo del rechazo...'}
+            onChange={(e) => setActionModal((prev) => ({ ...prev, comentarios: e.target.value }))}
+          />
+          {actionModal.error && <p className="text-xs text-red-600 mt-1">{actionModal.error}</p>}
+          <div className="mt-4 flex justify-end gap-2">
+            <button
+              className="px-4 py-2 text-sm rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-50"
+              onClick={() => setActionModal({ open: false, mode: 'aprobar', inmueble: null, comentarios: '' })}
+            >
+              Cancelar
+            </button>
+            <button
+              className={`px-4 py-2 text-sm rounded-lg text-white ${actionModal.mode === 'aprobar' ? 'bg-green-600 hover:bg-green-700' : 'bg-red-600 hover:bg-red-700'}`}
+              onClick={async () => {
+                const inmueble = actionModal.inmueble;
+                if (!inmueble) return;
+                if (actionModal.mode === 'rechazar' && !actionModal.comentarios.trim()) {
+                  setActionModal((prev) => ({ ...prev, error: 'Debe proporcionar un motivo para el rechazo' }));
+                  return;
+                }
+                setActionModal((prev) => ({ ...prev, error: undefined }));
+                const comentarios = actionModal.comentarios.trim() || undefined;
+                if (actionModal.mode === 'aprobar' && onAprobar) {
+                  setProcessingIds((prev) => new Set(prev).add(inmueble.id));
+                  try { await onAprobar(inmueble.id, comentarios); } finally {
+                    setProcessingIds((prev) => { const n = new Set(prev); n.delete(inmueble.id); return n; });
+                  }
+                } else if (actionModal.mode === 'rechazar' && onRechazar) {
+                  setProcessingIds((prev) => new Set(prev).add(inmueble.id));
+                  try { await onRechazar(inmueble.id, comentarios || ''); } finally {
+                    setProcessingIds((prev) => { const n = new Set(prev); n.delete(inmueble.id); return n; });
+                  }
+                }
+                setActionModal({ open: false, mode: 'aprobar', inmueble: null, comentarios: '' });
+              }}
+            >
+              {actionModal.mode === 'aprobar' ? 'Aprobar' : 'Rechazar'}
+            </button>
+          </div>
+        </div>
+      </div>
+    )}
     </>
   );
 }

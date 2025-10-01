@@ -32,6 +32,7 @@ interface DataTableProps {
   sortOrder?: 'asc' | 'desc';
   showViewAction?: boolean; // mostrar/ocultar botón "Ver"
   enableRowClick?: boolean; // habilitar/deshabilitar navegación al hacer clic en la fila
+  onEnviarValidacion?: (inmueble: Inmueble) => void; // acción para mandar a validación
 }
 
 export default function DataTable({
@@ -44,6 +45,7 @@ export default function DataTable({
   sortOrder = 'asc',
   showViewAction = true,
   enableRowClick = true,
+  onEnviarValidacion,
 }: DataTableProps) {
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [selectAll, setSelectAll] = useState(false);
@@ -94,24 +96,7 @@ export default function DataTable({
     }
   };
 
-  const getEstadoColor = (estado: string) => {
-    switch (estado?.toLowerCase()) {
-      case 'activo':
-      case 'disponible':
-        return 'bg-green-100 text-green-800';
-      case 'inactivo':
-        return 'bg-gray-100 text-gray-800';
-      case 'mantenimiento':
-        return 'bg-yellow-100 text-yellow-800';
-      case 'baja':
-      case 'invadido':
-        return 'bg-red-100 text-red-800';
-      case 'ocupado':
-        return 'bg-blue-100 text-blue-800';
-      default:
-        return 'bg-gray-100 text-gray-800';
-    }
-  };
+  // En esta tabla, el estado mostrado es el geográfico (estado del país), por lo que no usamos chips de color
 
   const SortIcon = ({ field }: { field: string }) => {
     if (sortField !== field) {
@@ -196,11 +181,11 @@ export default function DataTable({
               </th>
               <th 
                 className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
-                onClick={() => handleSort('estadoActual')}
+                onClick={() => handleSort('estado')}
               >
                 <div className="flex items-center space-x-1">
                   <span>Estado</span>
-                  <SortIcon field="estadoActual" />
+                  <SortIcon field="estado" />
                 </div>
               </th>
               <th 
@@ -263,10 +248,8 @@ export default function DataTable({
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                   {inmueble.tipoInmueble || '—'}
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getEstadoColor(inmueble.estadoActual || inmueble.estado || '')}`}>
-                    {inmueble.estadoActual || inmueble.estado || '—'}
-                  </span>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                  {inmueble.estado || '—'}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                   {inmueble.localizacion?.municipio || inmueble.camposEspecificos?.['Municipio'] || '—'}
@@ -359,6 +342,12 @@ export default function DataTable({
                         Editar
                       </button>
                     )}
+                    <button
+                      onClick={(e) => { e.stopPropagation(); onEnviarValidacion?.(inmueble); }}
+                      className="text-amber-700 hover:text-amber-900 font-medium"
+                    >
+                      Mandar a validación
+                    </button>
                   </div>
                 </td>
               </tr>

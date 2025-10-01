@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect, useRef, useState } from "react"
+import { createPortal } from "react-dom"
 
 type ToastType = "success" | "error" | "info" | "warning"
 
@@ -64,8 +65,8 @@ export default function Toast({ type, message, onClose, durationMs = 4000 }: Toa
     closeTimerRef.current = window.setTimeout(() => onClose(), 300)
   }
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 pointer-events-none">
+  const toastContent = (
+    <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 pointer-events-none">
       <div
         className={`max-w-sm w-full pointer-events-auto shadow-xl shadow-black/5 rounded-xl border border-gray-100 backdrop-blur-sm ${styles.container} transition-all duration-300 ease-out ${mounted && !leaving ? 'opacity-100 scale-100' : 'opacity-0 scale-95'}`}
       >
@@ -90,4 +91,10 @@ export default function Toast({ type, message, onClose, durationMs = 4000 }: Toa
       </div>
     </div>
   )
+
+  // Render como portal para asegurar que aparezca por encima de todos los modales
+  if (typeof document !== 'undefined') {
+    return createPortal(toastContent, document.body)
+  }
+  return toastContent
 }

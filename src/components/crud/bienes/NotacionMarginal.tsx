@@ -1,6 +1,7 @@
 'use client';
 
 import { StepProps } from './types';
+import { useState } from 'react';
 
 const getFileName = (url?: string) => {
   if (!url) return '';
@@ -13,6 +14,7 @@ const getFileName = (url?: string) => {
 };
 
 export default function NotacionMarginal({ datos, actualizarDatos, setArchivo }: StepProps) {
+  const [cola, setCola] = useState<{ instrumentoGeneral?: string[] }>({});
   return (
     <div className="space-y-8">
       <div className="text-center mb-8">
@@ -100,20 +102,44 @@ export default function NotacionMarginal({ datos, actualizarDatos, setArchivo }:
                     type="file"
                     accept="application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
                     className="hidden"
-                    onChange={async (e) => {
+                  onChange={async (e) => {
                       const file = e.target.files?.[0];
                       if (!file) return;
                   setArchivo?.('notacion_marginal:instrumento_general', file);
-                  actualizarDatos('instrumentoGeneral', file.name);
+                  setCola((prev) => ({ ...prev, instrumentoGeneral: [ ...(prev.instrumentoGeneral || []), file.name ] }));
                     }}
                   />
                   Subir instrumento
                 </label>
                 {(datos.instrumentoGeneral || (datos as { instrumento_general?: string }).instrumento_general) && (
-                  <div className="flex items-center gap-2 bg-gray-50 border border-gray-200 rounded-md px-3 py-2">
-                    <span className="text-sm text-gray-700 truncate max-w-xs">{getFileName(datos.instrumentoGeneral || (datos as { instrumento_general?: string }).instrumento_general)}</span>
-                    <a href={datos.instrumentoGeneral || (datos as { instrumento_general?: string }).instrumento_general} target="_blank" rel="noopener noreferrer" className="text-blue-600 text-sm hover:underline">Ver</a>
-                    <button type="button" onClick={() => actualizarDatos('instrumentoGeneral', '')} className="text-red-600 text-sm hover:underline">Quitar</button>
+                  <div className="flex items-center justify-between bg-gradient-to-r from-amber-50 to-yellow-50 border border-amber-200 rounded-lg px-4 py-3 shadow-sm">
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 bg-amber-100 rounded-full flex items-center justify-center">
+                        <svg className="w-4 h-4 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                        </svg>
+                      </div>
+                      <span className="text-sm font-medium text-gray-800 truncate max-w-xs">{getFileName(datos.instrumentoGeneral || (datos as { instrumento_general?: string }).instrumento_general)}</span>
+                    </div>
+                    <button 
+                      type="button" 
+                      onClick={() => actualizarDatos('instrumentoGeneral', '')} 
+                      className="w-8 h-8 bg-red-100 hover:bg-red-200 rounded-full flex items-center justify-center transition-colors duration-200"
+                      title="Quitar archivo"
+                    >
+                      <svg className="w-4 h-4 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                    </button>
+                  </div>
+                )}
+                {Array.isArray(cola.instrumentoGeneral) && cola.instrumentoGeneral.length > 0 && (
+                  <div className="flex flex-col gap-2 mt-2">
+                    {cola.instrumentoGeneral.map((n, i) => (
+                      <div key={i} className="flex items-center gap-2 bg-gray-50 border border-gray-200 rounded-md px-3 py-2">
+                        <span className="text-xs text-gray-700 truncate max-w-xs">En cola: {n}</span>
+                      </div>
+                    ))}
                   </div>
                 )}
               </div>

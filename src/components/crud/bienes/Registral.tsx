@@ -1,6 +1,7 @@
 'use client';
 
 import { StepProps } from './types';
+import { useState } from 'react';
 
 const getFileName = (url?: string) => {
   if (!url) return '';
@@ -13,6 +14,7 @@ const getFileName = (url?: string) => {
 };
 
 export default function Registral({ datos, actualizarDatos, setArchivo }: StepProps) {
+  const [cola, setCola] = useState<{ certificado?: string[]; antecedente?: string[] }>({});
   return (
     <div className="space-y-8">
       <div className="text-center mb-8">
@@ -34,9 +36,6 @@ export default function Registral({ datos, actualizarDatos, setArchivo }: StepPr
               className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#676D47] focus:border-transparent transition-all duration-200 text-gray-900 placeholder-gray-400 bg-white"
               placeholder="FE-2024-001"
             />
-            <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-              <span className="text-gray-500 text-sm">📁</span>
-            </div>
           </div>
         </div>
 
@@ -64,7 +63,7 @@ export default function Registral({ datos, actualizarDatos, setArchivo }: StepPr
                   const file = e.target.files?.[0];
                   if (!file) return;
                   setArchivo?.('registral:certificado_libertad_gravamen', file);
-                  actualizarDatos('certificadoLibertadGravamen', file.name);
+                  setCola((prev) => ({ ...prev, certificado: [ ...(prev.certificado || []), file.name ] }));
                 }}
               />
               Subir certificado
@@ -74,6 +73,15 @@ export default function Registral({ datos, actualizarDatos, setArchivo }: StepPr
                 <span className="text-sm text-gray-700 truncate max-w-xs">{getFileName(datos.certificadoLibertadGravamen || datos.certificado_libertad_gravamen)}</span>
                 <a href={(datos.certificadoLibertadGravamen || datos.certificado_libertad_gravamen) as string} target="_blank" rel="noopener noreferrer" className="text-blue-600 text-sm hover:underline">Ver</a>
                 <button type="button" onClick={() => actualizarDatos('certificadoLibertadGravamen', '')} className="text-red-600 text-sm hover:underline">Quitar</button>
+              </div>
+            )}
+            {Array.isArray(cola.certificado) && cola.certificado.length > 0 && (
+              <div className="flex flex-col gap-2 mt-2">
+                {cola.certificado.map((n, i) => (
+                  <div key={i} className="flex items-center gap-2 bg-gray-50 border border-gray-200 rounded-md px-3 py-2">
+                    <span className="text-xs text-gray-700 truncate max-w-xs">En cola: {n}</span>
+                  </div>
+                ))}
               </div>
             )}
           </div>
@@ -92,7 +100,7 @@ export default function Registral({ datos, actualizarDatos, setArchivo }: StepPr
                   const file = e.target.files?.[0];
                   if (!file) return;
                   setArchivo?.('registral:archivo_antecedente_registral', file);
-                  actualizarDatos('archivoAntecedenteRegistral', file.name);
+                  setCola((prev) => ({ ...prev, antecedente: [ ...(prev.antecedente || []), file.name ] }));
                 }}
               />
               Subir antecedente
@@ -102,6 +110,15 @@ export default function Registral({ datos, actualizarDatos, setArchivo }: StepPr
                 <span className="text-sm text-gray-700 truncate max-w-xs">{getFileName(datos.archivoAntecedenteRegistral || datos.archivo_antecedente_registral)}</span>
                 <a href={(datos.archivoAntecedenteRegistral || datos.archivo_antecedente_registral) as string} target="_blank" rel="noopener noreferrer" className="text-blue-600 text-sm hover:underline">Ver</a>
                 <button type="button" onClick={() => actualizarDatos('archivoAntecedenteRegistral', '')} className="text-red-600 text-sm hover:underline">Quitar</button>
+              </div>
+            )}
+            {Array.isArray(cola.antecedente) && cola.antecedente.length > 0 && (
+              <div className="flex flex-col gap-2 mt-2">
+                {cola.antecedente.map((n, i) => (
+                  <div key={i} className="flex items-center gap-2 bg-gray-50 border border-gray-200 rounded-md px-3 py-2">
+                    <span className="text-xs text-gray-700 truncate max-w-xs">En cola: {n}</span>
+                  </div>
+                ))}
               </div>
             )}
           </div>
@@ -155,7 +172,7 @@ export default function Registral({ datos, actualizarDatos, setArchivo }: StepPr
           <div className="space-y-3">
             {datos.folioElectronico && (
               <div className="text-blue-700">
-                <p className="font-medium">📁 <strong>Folio Electrónico:</strong> {datos.folioElectronico}</p>
+                <p className="font-medium"> <strong>Folio Electrónico:</strong> {datos.folioElectronico}</p>
               </div>
             )}
             
@@ -164,7 +181,6 @@ export default function Registral({ datos, actualizarDatos, setArchivo }: StepPr
                 <h5 className="font-medium text-blue-700">Documentos Disponibles</h5>
                 {(datos.certificadoLibertadGravamen || datos.certificado_libertad_gravamen) && (
                   <div className="flex items-center space-x-2">
-                    <span className="text-blue-600">📄</span>
                     <a 
                       href={(datos.certificadoLibertadGravamen || datos.certificado_libertad_gravamen) as string} 
                       target="_blank" 
@@ -177,7 +193,6 @@ export default function Registral({ datos, actualizarDatos, setArchivo }: StepPr
                 )}
                 {(datos.archivoAntecedenteRegistral || datos.archivo_antecedente_registral) && (
                   <div className="flex items-center space-x-2">
-                    <span className="text-blue-600">📋</span>
                     <a 
                       href={(datos.archivoAntecedenteRegistral || datos.archivo_antecedente_registral) as string} 
                       target="_blank" 

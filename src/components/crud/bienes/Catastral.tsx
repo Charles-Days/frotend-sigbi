@@ -1,6 +1,7 @@
 'use client';
 
 import { StepProps } from './types';
+import { useState } from 'react';
 
 const getFileName = (url?: string) => {
   if (!url) return '';
@@ -13,6 +14,7 @@ const getFileName = (url?: string) => {
 };
 
 export default function Catastral({ datos, actualizarDatos, setArchivo }: StepProps) {
+  const [cola, setCola] = useState<{ planoCatastral?: string[]; pdfCatastral?: string[] }>({});
   return (
     <div className="space-y-8">
       <div className="text-center mb-8">
@@ -33,9 +35,6 @@ export default function Catastral({ datos, actualizarDatos, setArchivo }: StepPr
               className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#676D47] focus:border-transparent transition-all duration-200 text-gray-900 placeholder-gray-400 bg-white"
               placeholder="Av. Hidalgo #123, Centro"
             />
-            <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-              <span className="text-gray-500 text-sm">📋</span>
-            </div>
           </div>
         </div>
 
@@ -52,9 +51,6 @@ export default function Catastral({ datos, actualizarDatos, setArchivo }: StepPr
               className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#676D47] focus:border-transparent transition-all duration-200 text-gray-900 placeholder-gray-400 bg-white"
               placeholder="14-039-001"
             />
-            <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-              <span className="text-gray-500 text-sm">🔢</span>
-            </div>
           </div>
         </div>
 
@@ -82,9 +78,6 @@ export default function Catastral({ datos, actualizarDatos, setArchivo }: StepPr
               className="w-full px-4 py-3 pr-12 border-2 border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#676D47] focus:border-transparent transition-all duration-200 text-gray-900 placeholder-gray-400 bg-white"
               placeholder="$800,000"
             />
-            <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-              <span className="text-gray-500 text-sm">💰</span>
-            </div>
           </div>
         </div>
 
@@ -100,9 +93,6 @@ export default function Catastral({ datos, actualizarDatos, setArchivo }: StepPr
               className="w-full px-4 py-3 pr-12 border-2 border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#676D47] focus:border-transparent transition-all duration-200 text-gray-900 placeholder-gray-400 bg-white"
               placeholder="$750,000"
             />
-            <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-              <span className="text-gray-500 text-sm">💵</span>
-            </div>
           </div>
         </div>
 
@@ -118,9 +108,6 @@ export default function Catastral({ datos, actualizarDatos, setArchivo }: StepPr
               className="w-full px-4 py-3 pr-12 border-2 border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#676D47] focus:border-transparent transition-all duration-200 text-gray-900 placeholder-gray-400 bg-white"
               placeholder="500"
             />
-            <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-              <span className="text-gray-500 text-sm">📐</span>
-            </div>
           </div>
         </div>
 
@@ -136,16 +123,40 @@ export default function Catastral({ datos, actualizarDatos, setArchivo }: StepPr
                   const file = e.target.files?.[0];
                   if (!file) return;
                   setArchivo?.('catastral:plano_catastral', file);
-                  actualizarDatos('planoCatastral', file.name);
+                  setCola((prev) => ({ ...prev, planoCatastral: [ ...(prev.planoCatastral || []), file.name ] }));
                 }}
               />
               Subir archivo
             </label>
             {(Boolean(datos.planoCatastral) || Boolean(datos.plano_catastral)) && (
-              <div className="flex items-center gap-2 bg-gray-50 border border-gray-200 rounded-md px-3 py-2">
-                <span className="text-sm text-gray-700 truncate max-w-xs">{getFileName(datos.planoCatastral || datos.plano_catastral)}</span>
-                <a href={(datos.planoCatastral || datos.plano_catastral) as string} target="_blank" rel="noopener noreferrer" className="text-blue-600 text-sm hover:underline">Ver</a>
-                <button type="button" onClick={() => actualizarDatos('planoCatastral', '')} className="text-red-600 text-sm hover:underline">Quitar</button>
+              <div className="flex items-center justify-between bg-gradient-to-r from-orange-50 to-red-50 border border-orange-200 rounded-lg px-4 py-3 shadow-sm">
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 bg-orange-100 rounded-full flex items-center justify-center">
+                    <svg className="w-4 h-4 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                  </div>
+                  <span className="text-sm font-medium text-gray-800 truncate max-w-xs">{getFileName(datos.planoCatastral || datos.plano_catastral)}</span>
+                </div>
+                <button 
+                  type="button" 
+                  onClick={() => actualizarDatos('planoCatastral', '')} 
+                  className="w-8 h-8 bg-red-100 hover:bg-red-200 rounded-full flex items-center justify-center transition-colors duration-200"
+                  title="Quitar archivo"
+                >
+                  <svg className="w-4 h-4 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+            )}
+            {Array.isArray(cola.planoCatastral) && cola.planoCatastral.length > 0 && (
+              <div className="flex flex-col gap-2 mt-2">
+                {cola.planoCatastral.map((n, i) => (
+                  <div key={i} className="flex items-center gap-2 bg-gray-50 border border-gray-200 rounded-md px-3 py-2">
+                    <span className="text-xs text-gray-700 truncate max-w-xs">En cola: {n}</span>
+                  </div>
+                ))}
               </div>
             )}
           </div>
@@ -190,16 +201,40 @@ export default function Catastral({ datos, actualizarDatos, setArchivo }: StepPr
                   if (!file) return;
                   // backend espera pdf_catastral
                   setArchivo?.('catastral:pdf_catastral', file);
-                  actualizarDatos('pdfCatastral', file.name);
+                  setCola((prev) => ({ ...prev, pdfCatastral: [ ...(prev.pdfCatastral || []), file.name ] }));
                 }}
               />
               Subir PDF
             </label>
             {(Boolean(datos.pdfCatastral) || Boolean(datos.pdf_catastral)) && (
-              <div className="flex items-center gap-2 bg-gray-50 border border-gray-200 rounded-md px-3 py-2">
-                <span className="text-sm text-gray-700 truncate max-w-xs">{getFileName(datos.pdfCatastral || datos.pdf_catastral)}</span>
-                <a href={(datos.pdfCatastral || datos.pdf_catastral) as string} target="_blank" rel="noopener noreferrer" className="text-blue-600 text-sm hover:underline">Ver</a>
-                <button type="button" onClick={() => actualizarDatos('pdfCatastral', '')} className="text-red-600 text-sm hover:underline">Quitar</button>
+              <div className="flex items-center justify-between bg-gradient-to-r from-cyan-50 to-blue-50 border border-cyan-200 rounded-lg px-4 py-3 shadow-sm">
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 bg-cyan-100 rounded-full flex items-center justify-center">
+                    <svg className="w-4 h-4 text-cyan-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                  </div>
+                  <span className="text-sm font-medium text-gray-800 truncate max-w-xs">{getFileName(datos.pdfCatastral || datos.pdf_catastral)}</span>
+                </div>
+                <button 
+                  type="button" 
+                  onClick={() => actualizarDatos('pdfCatastral', '')} 
+                  className="w-8 h-8 bg-red-100 hover:bg-red-200 rounded-full flex items-center justify-center transition-colors duration-200"
+                  title="Quitar archivo"
+                >
+                  <svg className="w-4 h-4 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+            )}
+            {Array.isArray(cola.pdfCatastral) && cola.pdfCatastral.length > 0 && (
+              <div className="flex flex-col gap-2 mt-2">
+                {cola.pdfCatastral.map((n, i) => (
+                  <div key={i} className="flex items-center gap-2 bg-gray-50 border border-gray-200 rounded-md px-3 py-2">
+                    <span className="text-xs text-gray-700 truncate max-w-xs">En cola: {n}</span>
+                  </div>
+                ))}
               </div>
             )}
           </div>

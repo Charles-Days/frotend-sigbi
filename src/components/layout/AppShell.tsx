@@ -16,7 +16,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
   }
 
   return (
-    <div className="h-screen bg-gradient-to-br from-gray-50 via-gray-100 to-gray-200 flex flex-col overflow-hidden relative">
+    <div className="h-screen bg-[#F5F1EE] flex flex-col overflow-hidden relative">
       {/* Fondo difuminado para crear profundidad */}
       <div className="absolute inset-0 bg-gradient-to-br from-white/20 via-transparent to-gray-300/30 pointer-events-none z-10"></div>
       

@@ -53,7 +53,7 @@ export default function UserEditForm({ open, initial, saving = false, onClose, o
   if (!open) return null;
 
   const modal = (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 modal">
+    <div className="fixed inset-0 z-[55] flex items-center justify-center bg-black/40 modal">
       <div className="bg-white w-full max-w-lg rounded-lg shadow-lg p-6 modal-content">
         <h3 className="text-lg font-semibold mb-4">{initial?.id ? 'Editar usuario' : 'Nuevo usuario'}</h3>
         <div className="space-y-3">

@@ -16,6 +16,7 @@ const getFileName = (url?: string) => {
 export default function Valuacion({ datos, actualizarDatos, setArchivo }: StepProps) {
   const [openTipo, setOpenTipo] = useState(false);
   const listaRef = useRef<HTMLUListElement | null>(null);
+  const [cola, setCola] = useState<{ pdfValuacion?: string[] }>({});
   
   const opciones = [
     { value: 'Para Arrendamiento', label: 'Para Arrendamiento' },
@@ -146,18 +147,40 @@ export default function Valuacion({ datos, actualizarDatos, setArchivo }: StepPr
                   // Guardar para envío integrado por FormData
                   setArchivo?.('valuacion:pdf', file);
                   // Mostrar nombre temporalmente
-                  actualizarDatos('pdfValuacion', file.name);
+                  setCola((prev) => ({ ...prev, pdfValuacion: [ ...(prev.pdfValuacion || []), file.name ] }));
                 }}
               />
               Subir PDF
             </label>
             {(datos.pdfValuacion || datos.pdf_avaluo) && (
-              <div className="flex items-center gap-2 bg-gray-50 border border-gray-200 rounded-md px-3 py-2">
-                <span className="text-sm text-gray-700 truncate max-w-xs">{getFileName(datos.pdfValuacion || datos.pdf_avaluo)}</span>
-                {((/https?:\/\//.test(String(datos.pdfValuacion || datos.pdf_avaluo))) || String(datos.pdfValuacion || datos.pdf_avaluo).startsWith('/api/v1/files/')) && (
-                  <a href={(datos.pdfValuacion || datos.pdf_avaluo) as string} target="_blank" rel="noopener noreferrer" className="text-blue-600 text-sm hover:underline">Ver</a>
-                )}
-                <button type="button" onClick={() => actualizarDatos('pdfValuacion', '')} className="text-red-600 text-sm hover:underline">Quitar</button>
+              <div className="flex items-center justify-between bg-gradient-to-r from-emerald-50 to-teal-50 border border-emerald-200 rounded-lg px-4 py-3 shadow-sm">
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 bg-emerald-100 rounded-full flex items-center justify-center">
+                    <svg className="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                  </div>
+                  <span className="text-sm font-medium text-gray-800 truncate max-w-xs">{getFileName(datos.pdfValuacion || datos.pdf_avaluo)}</span>
+                </div>
+                <button 
+                  type="button" 
+                  onClick={() => actualizarDatos('pdfValuacion', '')} 
+                  className="w-8 h-8 bg-red-100 hover:bg-red-200 rounded-full flex items-center justify-center transition-colors duration-200"
+                  title="Quitar archivo"
+                >
+                  <svg className="w-4 h-4 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+            )}
+            {Array.isArray(cola.pdfValuacion) && cola.pdfValuacion.length > 0 && (
+              <div className="flex flex-col gap-2 mt-2">
+                {cola.pdfValuacion.map((n, i) => (
+                  <div key={i} className="flex items-center gap-2 bg-gray-50 border border-gray-200 rounded-md px-3 py-2">
+                    <span className="text-xs text-gray-700 truncate max-w-xs">En cola: {n}</span>
+                  </div>
+                ))}
               </div>
             )}
           </div>

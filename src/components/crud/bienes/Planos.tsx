@@ -23,9 +23,6 @@ export default function Catastral({ datos, actualizarDatos }: StepProps) {
               className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#676D47] focus:border-transparent transition-all duration-200 text-gray-900 placeholder-gray-400 bg-white"
               placeholder="Av. Hidalgo #123, Centro"
             />
-            <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-              <span className="text-gray-500 text-sm">📋</span>
-            </div>
           </div>
         </div>
 
@@ -42,9 +39,6 @@ export default function Catastral({ datos, actualizarDatos }: StepProps) {
               className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#676D47] focus:border-transparent transition-all duration-200 text-gray-900 placeholder-gray-400 bg-white"
               placeholder="14-039-001"
             />
-            <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-              <span className="text-gray-500 text-sm">🔢</span>
-            </div>
           </div>
         </div>
 
@@ -72,9 +66,6 @@ export default function Catastral({ datos, actualizarDatos }: StepProps) {
               className="w-full px-4 py-3 pr-12 border-2 border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#676D47] focus:border-transparent transition-all duration-200 text-gray-900 placeholder-gray-400 bg-white"
               placeholder="$800,000"
             />
-            <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-              <span className="text-gray-500 text-sm">💰</span>
-            </div>
           </div>
         </div>
 
@@ -90,9 +81,7 @@ export default function Catastral({ datos, actualizarDatos }: StepProps) {
               className="w-full px-4 py-3 pr-12 border-2 border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#676D47] focus:border-transparent transition-all duration-200 text-gray-900 placeholder-gray-400 bg-white"
               placeholder="$750,000"
             />
-            <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-              <span className="text-gray-500 text-sm">💵</span>
-            </div>
+
           </div>
         </div>
 
@@ -108,9 +97,6 @@ export default function Catastral({ datos, actualizarDatos }: StepProps) {
               className="w-full px-4 py-3 pr-12 border-2 border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#676D47] focus:border-transparent transition-all duration-200 text-gray-900 placeholder-gray-400 bg-white"
               placeholder="500"
             />
-            <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-              <span className="text-gray-500 text-sm">📐</span>
-            </div>
           </div>
         </div>
 

@@ -43,9 +43,6 @@ export default function Documentos({ datos, actualizarDatos }: StepProps) {
               className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#676D47] focus:border-transparent transition-all duration-200 text-gray-900 placeholder-gray-400 bg-white"
               placeholder="Número de escritura pública"
             />
-            <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-              <span className="text-gray-500 text-sm">🔢</span>
-            </div>
           </div>
         </div>
 
@@ -116,9 +113,6 @@ export default function Documentos({ datos, actualizarDatos }: StepProps) {
               className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#676D47] focus:border-transparent transition-all duration-200 text-gray-900 placeholder-gray-400 bg-white"
               placeholder="Nombre del notario o fedatario público"
             />
-            <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-              <span className="text-gray-500 text-sm">👨‍💼</span>
-            </div>
           </div>
         </div>
 

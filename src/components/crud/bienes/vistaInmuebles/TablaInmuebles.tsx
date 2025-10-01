@@ -20,6 +20,11 @@ interface Inmueble {
   camposFaltantes?: string[];
   completitudEspecificos?: number;
   completadoPorPasos?: number;
+  // Campos de aprobación
+  estadoAprobacion?: string;
+  aprobadoPorId?: string | null;
+  fechaAprobacion?: string | null;
+  comentariosAprobacion?: string | null;
 }
 
 interface TablaInmueblesProps {
@@ -28,9 +33,14 @@ interface TablaInmueblesProps {
   onSort?: (field: string, order: 'asc' | 'desc') => void;
   onRowClick?: (inmueble: Inmueble) => void;
   onSelectionChange?: (selectedIds: string[]) => void;
+  selectedIdsExternal?: string[]; // selección controlada desde el padre
   sortField?: string;
   sortOrder?: 'asc' | 'desc';
   enableRowClick?: boolean;
+  onEnviarValidacion?: (inmueble: Inmueble) => void;
+  showSelection?: boolean;
+  onVerComentarios?: (inmueble: Inmueble) => void;
+  showComentarios?: boolean;
 }
 
 export default function TablaInmuebles({
@@ -39,21 +49,41 @@ export default function TablaInmuebles({
   onSort,
   onRowClick,
   onSelectionChange,
+  selectedIdsExternal,
   sortField,
   sortOrder = 'asc',
   enableRowClick = true,
+  onEnviarValidacion,
+  showSelection = true,
+  onVerComentarios,
+  showComentarios = false,
 }: TablaInmueblesProps) {
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [selectAll, setSelectAll] = useState(false);
   const [selectedInmueble, setSelectedInmueble] = useState<Inmueble | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  // Sincronizar con el estado del componente padre
+  // Sincronizar con el estado del componente padre, solo si difiere del externo
   useEffect(() => {
-    if (onSelectionChange) {
+    if (!onSelectionChange) return;
+    const sameLength = (selectedIdsExternal?.length || 0) === selectedIds.length;
+    const sameSet = selectedIdsExternal && sameLength && selectedIds.every(id => selectedIdsExternal.includes(id));
+    if (!sameSet) {
       onSelectionChange(selectedIds);
     }
-  }, [selectedIds, onSelectionChange]);
+  }, [selectedIds, onSelectionChange, selectedIdsExternal]);
+
+  // Reflejar cambios de selección externos (por ejemplo, "Deseleccionar Todos")
+  useEffect(() => {
+    if (!selectedIdsExternal) return;
+    const isSameLength = selectedIdsExternal.length === selectedIds.length;
+    const isSameSet = isSameLength && selectedIdsExternal.every(id => selectedIds.includes(id));
+    if (!isSameSet) {
+      setSelectedIds(selectedIdsExternal);
+    }
+    // Nota: no dependemos de selectedIds para evitar bucles; comparamos solo con selectedIdsExternal vs estado actual
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedIdsExternal]);
 
   // Actualizar el estado de "Seleccionar todos" cuando cambian los datos o la selección
   useEffect(() => {
@@ -179,16 +209,18 @@ export default function TablaInmuebles({
           <table className="min-w-full">
             <thead>
               <tr className="border-b border-gray-100">
-                <th className="px-6 py-4 text-left">
-                  <div className="flex items-center">
-                    <input
-                      type="checkbox"
-                      checked={selectAll}
-                      onChange={(e) => handleSelectAll(e.target.checked)}
-                      className="h-4 w-4 text-[#676D47] focus:ring-[#676D47] border-gray-300 rounded"
-                    />
-                  </div>
-                </th>
+                {showSelection && (
+                  <th className="px-6 py-4 text-left">
+                    <div className="flex items-center">
+                      <input
+                        type="checkbox"
+                        checked={selectAll}
+                        onChange={(e) => handleSelectAll(e.target.checked)}
+                        className="h-4 w-4 text-[#676D47] focus:ring-[#676D47] border-gray-300 rounded"
+                      />
+                    </div>
+                  </th>
+                )}
                 <th 
                   className="px-6 py-4 text-left text-sm font-semibold text-gray-700 cursor-pointer hover:text-gray-900 transition-colors"
                   onClick={() => handleSort('numeroRegistro')}
@@ -243,6 +275,11 @@ export default function TablaInmuebles({
                 <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">
                   Progreso
                 </th>
+                {showComentarios && (
+                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">
+                    Comentarios
+                  </th>
+                )}
                 <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">
                   Acciones
                 </th>
@@ -255,14 +292,16 @@ export default function TablaInmuebles({
                   className={`border-b border-gray-50 hover:bg-gray-50/50 transition-colors ${enableRowClick ? 'cursor-pointer' : 'cursor-default'}`}
                   onClick={enableRowClick ? () => onRowClick?.(inmueble) : undefined}
                 >
-                  <td className="px-6 py-5" onClick={(e) => e.stopPropagation()}>
-                    <input
-                      type="checkbox"
-                      checked={selectedIds.includes(inmueble.id)}
-                      onChange={(e) => handleSelectRow(inmueble.id, e.target.checked)}
-                      className="h-4 w-4 text-[#676D47] focus:ring-[#676D47] border-gray-300 rounded"
-                    />
-                  </td>
+                  {showSelection && (
+                    <td className="px-6 py-5" onClick={(e) => e.stopPropagation()}>
+                      <input
+                        type="checkbox"
+                        checked={selectedIds.includes(inmueble.id)}
+                        onChange={(e) => handleSelectRow(inmueble.id, e.target.checked)}
+                        className="h-4 w-4 text-[#676D47] focus:ring-[#676D47] border-gray-300 rounded"
+                      />
+                    </td>
+                  )}
                   <td className="px-6 py-5">
                     <div>
                       <div className="text-sm font-medium text-gray-900">
@@ -346,6 +385,23 @@ export default function TablaInmuebles({
                       </div>
                     </RegistroTooltip>
                   </td>
+                  {showComentarios && (
+                    <td className="px-6 py-5">
+                      {(inmueble.estadoAprobacion === 'APROBADO' || inmueble.estadoAprobacion === 'RECHAZADO') && inmueble.comentariosAprobacion ? (
+                        <button
+                          onClick={(e) => { e.stopPropagation(); onVerComentarios?.(inmueble); }}
+                          className="p-2 rounded-lg text-gray-400 hover:text-blue-600 hover:bg-blue-50 transition-all duration-200"
+                          title="Ver comentarios de aprobación"
+                        >
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                          </svg>
+                        </button>
+                      ) : (
+                        <span className="text-gray-400 text-sm">—</span>
+                      )}
+                    </td>
+                  )}
                   <td className="px-6 py-5">
                     <div className="flex space-x-1">
                       {/* Botón Ver - Icono de ojo */}
@@ -380,6 +436,26 @@ export default function TablaInmuebles({
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                         </svg>
                       </button>
+                      {onEnviarValidacion && (
+                        <button
+                          onClick={(e) => { e.stopPropagation(); onEnviarValidacion(inmueble); }}
+                          disabled={(inmueble.completado || 0) < 80}
+                          className={`p-2 rounded-lg transition-all duration-200 ${
+                            (inmueble.completado || 0) < 80
+                              ? 'text-gray-300 cursor-not-allowed'
+                              : 'text-gray-400 hover:text-amber-700 hover:bg-amber-50'
+                          }`}
+                          title={
+                            (inmueble.completado || 0) < 80
+                              ? 'Se requiere al menos 80% de completado para enviar a validación'
+                              : 'Mandar a validación'
+                          }
+                        >
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                          </svg>
+                        </button>
+                      )}
                     </div>
                   </td>
                 </tr>

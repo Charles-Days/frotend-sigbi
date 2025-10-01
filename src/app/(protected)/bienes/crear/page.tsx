@@ -725,7 +725,29 @@ export default function CrearBienPage() {
   // Almacén temporal de archivos por paso/campo
   const archivosRef = useRef<Record<string, File | File[]>>({});
   const setArchivo = (campo: string, valor: File | File[]) => {
-    archivosRef.current[campo] = valor;
+    const existente = archivosRef.current[campo];
+    // Si llega un arreglo de archivos
+    if (Array.isArray(valor)) {
+      if (Array.isArray(existente)) {
+        // Fusionar ambos arreglos
+        archivosRef.current[campo] = [...existente, ...valor];
+      } else if (existente instanceof File) {
+        // Convertir existente en arreglo y añadir los nuevos
+        archivosRef.current[campo] = [existente, ...valor];
+      } else {
+        // No había archivos previos
+        archivosRef.current[campo] = valor;
+      }
+      return;
+    }
+    // Si llega un único File
+    if (Array.isArray(existente)) {
+      archivosRef.current[campo] = [...existente, valor];
+    } else if (existente instanceof File) {
+      archivosRef.current[campo] = [existente, valor];
+    } else {
+      archivosRef.current[campo] = valor;
+    }
   };
 
   // Log de snapshot de datos del paso actual al cambiar de paso

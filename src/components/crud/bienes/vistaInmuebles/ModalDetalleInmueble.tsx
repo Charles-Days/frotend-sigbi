@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
+import { Home, FileText, StickyNote, Users as UsersIcon, BadgeDollarSign, Map, FileCheck2, Search } from 'lucide-react';
 import OpenStreetMapEmbed from '@/components/ui/OpenStreetMapEmbed';
 
 interface Juridico {
@@ -184,15 +185,16 @@ export default function ModalDetalleInmueble({ inmueble, isOpen, onClose }: Moda
 
   const datosAMostrar = inmuebleCompleto || inmueble;
 
-  const tabs = [
-    { id: 'basica', label: 'Información Básica', icon: '🏠' },
-    { id: 'juridica', label: 'Jurídica', icon: '📋' },
-    { id: 'notacion', label: 'Notación Marginal', icon: '📝' },
-    { id: 'ocupacion', label: 'Ocupación', icon: '👥' },
-    { id: 'avaluos', label: 'Avalúos', icon: '💰' },
-    { id: 'catastral', label: 'Catastral', icon: '🗺️' },
-    { id: 'registral', label: 'Registral', icon: '📄' },
-    { id: 'inspecciones', label: 'Inspecciones', icon: '🔍' }
+  type TabDef = { id: string; label: string; Icon: React.ComponentType<{ className?: string }> };
+  const tabs: TabDef[] = [
+    { id: 'basica', label: 'Información Básica', Icon: Home },
+    { id: 'juridica', label: 'Jurídica', Icon: FileText },
+    { id: 'notacion', label: 'Notación Marginal', Icon: StickyNote },
+    { id: 'ocupacion', label: 'Ocupación', Icon: UsersIcon },
+    { id: 'avaluos', label: 'Avalúos', Icon: BadgeDollarSign },
+    { id: 'catastral', label: 'Catastral', Icon: Map },
+    { id: 'registral', label: 'Registral', Icon: FileCheck2 },
+    { id: 'inspecciones', label: 'Inspecciones', Icon: Search }
   ];
 
   return (
@@ -200,7 +202,7 @@ export default function ModalDetalleInmueble({ inmueble, isOpen, onClose }: Moda
       <div className="flex items-center justify-center min-h-screen p-2 sm:p-4">
         {/* Overlay */}
         <div 
-          className="fixed inset-0 z-40 bg-black bg-opacity-25 backdrop-blur-sm"
+          className="fixed inset-0 z-40 bg-transparent backdrop-blur-sm"
           onClick={onClose}
         />
         
@@ -236,7 +238,7 @@ export default function ModalDetalleInmueble({ inmueble, isOpen, onClose }: Moda
                       : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
                   }`}
                 >
-                  <span className="text-sm sm:text-base">{tab.icon}</span>
+                  <span className="text-sm sm:text-base"><tab.Icon className="w-4 h-4" /></span>
                   <span className="hidden sm:inline">{tab.label}</span>
                   <span className="sm:hidden">{tab.label.split(' ')[0]}</span>
                 </button>
@@ -284,6 +286,8 @@ export default function ModalDetalleInmueble({ inmueble, isOpen, onClose }: Moda
                   <div className="space-y-2">
                     <p className="text-sm"><span className="font-medium">Construcción:</span> {datosAMostrar.construccion || '—'}</p>
                     <p className="text-sm"><span className="font-medium">Estado Actual:</span> {datosAMostrar.estadoActualInmueble || '—'}</p>
+                    <p className="text-sm"><span className="font-medium">Estado (localidad):</span> {datosAMostrar.estado || '—'}</p>
+                    <p className="text-sm"><span className="font-medium">Municipio:</span> {datosAMostrar.municipio || '—'}</p>
                     <p className="text-sm"><span className="font-medium">Tipo de Superficie:</span> {datosAMostrar.tipoSuperficie || '—'}</p>
                     <p className="text-sm"><span className="font-medium">Medidas y Colindancias:</span> {datosAMostrar.medidasColindancias || '—'}</p>
                     <p className="text-sm"><span className="font-medium">Ubicación Registral:</span> {datosAMostrar.ubicacionRegistral || '—'}</p>
@@ -352,23 +356,85 @@ export default function ModalDetalleInmueble({ inmueble, isOpen, onClose }: Moda
                 </div>
                 {/* Archivos jurídicos */}
                 {(datosAMostrar.juridico.archivo_juridico || datosAMostrar.juridico.instrumento_juridico_uso || datosAMostrar.juridico.instrumento_juridico_acredita) && (
-                  <div className="mt-4">
-                    <p className="text-sm font-medium text-gray-700 mb-2">Documentos:</p>
-                    <div className="flex flex-wrap gap-2">
+                  <div className="mt-6">
+                    <h5 className="text-md font-semibold text-gray-800 mb-3 flex items-center">
+                      <svg className="w-5 h-5 mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                      </svg>
+                      Documentos Jurídicos
+                    </h5>
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
                       {datosAMostrar.juridico.archivo_juridico && (
-                        <a href={datosAMostrar.juridico.archivo_juridico} target="_blank" rel="noopener noreferrer" className="inline-flex items-center px-3 py-1 rounded-full text-xs bg-blue-100 text-blue-800 hover:bg-blue-200">
-                          📄 Archivo Jurídico
-                        </a>
+                        <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-lg p-3 shadow-sm">
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-2">
+                              <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                                <svg className="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                </svg>
+                              </div>
+                              <span className="text-sm font-medium text-gray-800">Archivo Jurídico</span>
+                            </div>
+                            <a 
+                              href={`/api/v1/files/juridico/${datosAMostrar.juridico.archivo_juridico.split('/').pop()}/download`} 
+                              download
+                              className="w-8 h-8 bg-blue-100 hover:bg-blue-200 rounded-full flex items-center justify-center transition-colors duration-200"
+                              title="Descargar archivo"
+                            >
+                              <svg className="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                              </svg>
+                            </a>
+                          </div>
+                        </div>
                       )}
                       {datosAMostrar.juridico.instrumento_juridico_uso && (
-                        <a href={datosAMostrar.juridico.instrumento_juridico_uso} target="_blank" rel="noopener noreferrer" className="inline-flex items-center px-3 py-1 rounded-full text-xs bg-green-100 text-green-800 hover:bg-green-200">
-                          📄 Instrumento de Uso
-                        </a>
+                        <div className="bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 rounded-lg p-3 shadow-sm">
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-2">
+                              <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
+                                <svg className="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                </svg>
+                              </div>
+                              <span className="text-sm font-medium text-gray-800">Instrumento de Uso</span>
+                            </div>
+                            <a 
+                              href={`/api/v1/files/juridico/${datosAMostrar.juridico.instrumento_juridico_uso.split('/').pop()}/download`} 
+                              download
+                              className="w-8 h-8 bg-green-100 hover:bg-green-200 rounded-full flex items-center justify-center transition-colors duration-200"
+                              title="Descargar archivo"
+                            >
+                              <svg className="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                              </svg>
+                            </a>
+                          </div>
+                        </div>
                       )}
                       {datosAMostrar.juridico.instrumento_juridico_acredita && (
-                        <a href={datosAMostrar.juridico.instrumento_juridico_acredita} target="_blank" rel="noopener noreferrer" className="inline-flex items-center px-3 py-1 rounded-full text-xs bg-purple-100 text-purple-800 hover:bg-purple-200">
-                          📄 Instrumento Acredita
-                        </a>
+                        <div className="bg-gradient-to-r from-purple-50 to-violet-50 border border-purple-200 rounded-lg p-3 shadow-sm">
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-2">
+                              <div className="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center">
+                                <svg className="w-4 h-4 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                </svg>
+                              </div>
+                              <span className="text-sm font-medium text-gray-800">Instrumento Acredita</span>
+                            </div>
+                            <a 
+                              href={`/api/v1/files/juridico/${datosAMostrar.juridico.instrumento_juridico_acredita.split('/').pop()}/download`} 
+                              download
+                              className="w-8 h-8 bg-purple-100 hover:bg-purple-200 rounded-full flex items-center justify-center transition-colors duration-200"
+                              title="Descargar archivo"
+                            >
+                              <svg className="w-4 h-4 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                              </svg>
+                            </a>
+                          </div>
+                        </div>
                       )}
                     </div>
                   </div>
@@ -392,11 +458,35 @@ export default function ModalDetalleInmueble({ inmueble, isOpen, onClose }: Moda
                   </div>
                 </div>
                 {datosAMostrar.notacionMarginal.instrumento_general && (
-                  <div className="mt-4">
-                    <p className="text-sm font-medium text-gray-700 mb-2">Documentos:</p>
-                    <a href={datosAMostrar.notacionMarginal.instrumento_general} target="_blank" rel="noopener noreferrer" className="inline-flex items-center px-3 py-1 rounded-full text-xs bg-orange-100 text-orange-800 hover:bg-orange-200">
-                      📄 Instrumento General
-                    </a>
+                  <div className="mt-6">
+                    <h5 className="text-md font-semibold text-gray-800 mb-3 flex items-center">
+                      <svg className="w-5 h-5 mr-2 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                      </svg>
+                      Documentos de Notación Marginal
+                    </h5>
+                    <div className="bg-gradient-to-r from-amber-50 to-yellow-50 border border-amber-200 rounded-lg p-3 shadow-sm">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <div className="w-8 h-8 bg-amber-100 rounded-full flex items-center justify-center">
+                            <svg className="w-4 h-4 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                            </svg>
+                          </div>
+                          <span className="text-sm font-medium text-gray-800">Instrumento General</span>
+                        </div>
+                        <a 
+                          href={`/api/v1/files/notacion_marginal/${datosAMostrar.notacionMarginal.instrumento_general.split('/').pop()}/download`} 
+                          download
+                          className="w-8 h-8 bg-amber-100 hover:bg-amber-200 rounded-full flex items-center justify-center transition-colors duration-200"
+                          title="Descargar archivo"
+                        >
+                          <svg className="w-4 h-4 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                          </svg>
+                        </a>
+                      </div>
+                    </div>
                   </div>
                 )}
               </div>
@@ -435,9 +525,28 @@ export default function ModalDetalleInmueble({ inmueble, isOpen, onClose }: Moda
                         <div className="space-y-2">
                           <p className="text-sm"><span className="font-medium">Tipo de Valuación:</span> {avaluo.tipoValuacion || '—'}</p>
                           {avaluo.pdf_avaluo && (
-                            <a href={avaluo.pdf_avaluo} target="_blank" rel="noopener noreferrer" className="inline-flex items-center px-3 py-1 rounded-full text-xs bg-orange-100 text-orange-800 hover:bg-orange-200">
-                              📄 Ver Avalúo
-                            </a>
+                            <div className="bg-gradient-to-r from-emerald-50 to-teal-50 border border-emerald-200 rounded-lg p-3 shadow-sm">
+                              <div className="flex items-center justify-between">
+                                <div className="flex items-center gap-2">
+                                  <div className="w-8 h-8 bg-emerald-100 rounded-full flex items-center justify-center">
+                                    <svg className="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                    </svg>
+                                  </div>
+                                  <span className="text-sm font-medium text-gray-800">PDF de Avalúo</span>
+                                </div>
+                                <a 
+                                  href={`/api/v1/files/valuacion/${avaluo.pdf_avaluo.split('/').pop()}/download`} 
+                                  download
+                                  className="w-8 h-8 bg-emerald-100 hover:bg-emerald-200 rounded-full flex items-center justify-center transition-colors duration-200"
+                                  title="Descargar avalúo"
+                                >
+                                  <svg className="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                  </svg>
+                                </a>
+                              </div>
+                            </div>
                           )}
                         </div>
                       </div>
@@ -469,18 +578,61 @@ export default function ModalDetalleInmueble({ inmueble, isOpen, onClose }: Moda
                         </div>
                       </div>
                       {(catastral.plano_catastral || catastral.pdf_catastral) && (
-                        <div className="mt-4">
-                          <p className="text-sm font-medium text-gray-700 mb-2">Documentos:</p>
-                          <div className="flex flex-wrap gap-2">
+                        <div className="mt-6">
+                          <h5 className="text-md font-semibold text-gray-800 mb-3 flex items-center">
+                            <svg className="w-5 h-5 mr-2 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                            </svg>
+                            Documentos Catastrales
+                          </h5>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                             {catastral.plano_catastral && (
-                              <a href={catastral.plano_catastral} target="_blank" rel="noopener noreferrer" className="inline-flex items-center px-3 py-1 rounded-full text-xs bg-blue-100 text-blue-800 hover:bg-blue-200">
-                                📄 Plano Catastral
-                              </a>
+                              <div className="bg-gradient-to-r from-orange-50 to-red-50 border border-orange-200 rounded-lg p-3 shadow-sm">
+                                <div className="flex items-center justify-between">
+                                  <div className="flex items-center gap-2">
+                                    <div className="w-8 h-8 bg-orange-100 rounded-full flex items-center justify-center">
+                                      <svg className="w-4 h-4 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                      </svg>
+                                    </div>
+                                    <span className="text-sm font-medium text-gray-800">Plano Catastral</span>
+                                  </div>
+                                  <a 
+                                    href={`/api/v1/files/catastral/${catastral.plano_catastral.split('/').pop()}/download`} 
+                                    download
+                                    className="w-8 h-8 bg-orange-100 hover:bg-orange-200 rounded-full flex items-center justify-center transition-colors duration-200"
+                                    title="Descargar plano"
+                                  >
+                                    <svg className="w-4 h-4 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                    </svg>
+                                  </a>
+                                </div>
+                              </div>
                             )}
                             {catastral.pdf_catastral && (
-                              <a href={catastral.pdf_catastral} target="_blank" rel="noopener noreferrer" className="inline-flex items-center px-3 py-1 rounded-full text-xs bg-green-100 text-green-800 hover:bg-green-200">
-                                📄 PDF Catastral
-                              </a>
+                              <div className="bg-gradient-to-r from-cyan-50 to-blue-50 border border-cyan-200 rounded-lg p-3 shadow-sm">
+                                <div className="flex items-center justify-between">
+                                  <div className="flex items-center gap-2">
+                                    <div className="w-8 h-8 bg-cyan-100 rounded-full flex items-center justify-center">
+                                      <svg className="w-4 h-4 text-cyan-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                      </svg>
+                                    </div>
+                                    <span className="text-sm font-medium text-gray-800">PDF Catastral</span>
+                                  </div>
+                                  <a 
+                                    href={`/api/v1/files/catastral/${catastral.pdf_catastral.split('/').pop()}/download`} 
+                                    download
+                                    className="w-8 h-8 bg-cyan-100 hover:bg-cyan-200 rounded-full flex items-center justify-center transition-colors duration-200"
+                                    title="Descargar PDF"
+                                  >
+                                    <svg className="w-4 h-4 text-cyan-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                    </svg>
+                                  </a>
+                                </div>
+                              </div>
                             )}
                           </div>
                         </div>
@@ -510,18 +662,61 @@ export default function ModalDetalleInmueble({ inmueble, isOpen, onClose }: Moda
                         </div>
                       </div>
                       {(registral.certificado_libertad_gravamen || registral.archivo_antecedente_registral) && (
-                        <div className="mt-4">
-                          <p className="text-sm font-medium text-gray-700 mb-2">Documentos:</p>
-                          <div className="flex flex-wrap gap-2">
+                        <div className="mt-6">
+                          <h5 className="text-md font-semibold text-gray-800 mb-3 flex items-center">
+                            <svg className="w-5 h-5 mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                            </svg>
+                            Documentos Registrales
+                          </h5>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                             {registral.certificado_libertad_gravamen && (
-                              <a href={registral.certificado_libertad_gravamen} target="_blank" rel="noopener noreferrer" className="inline-flex items-center px-3 py-1 rounded-full text-xs bg-blue-100 text-blue-800 hover:bg-blue-200">
-                                📄 Certificado Libertad
-                              </a>
+                              <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-lg p-3 shadow-sm">
+                                <div className="flex items-center justify-between">
+                                  <div className="flex items-center gap-2">
+                                    <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                                      <svg className="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                      </svg>
+                                    </div>
+                                    <span className="text-sm font-medium text-gray-800">Certificado Libertad</span>
+                                  </div>
+                                  <a 
+                                    href={`/api/v1/files/registral/${registral.certificado_libertad_gravamen.split('/').pop()}/download`} 
+                                    download
+                                    className="w-8 h-8 bg-blue-100 hover:bg-blue-200 rounded-full flex items-center justify-center transition-colors duration-200"
+                                    title="Descargar certificado"
+                                  >
+                                    <svg className="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                    </svg>
+                                  </a>
+                                </div>
+                              </div>
                             )}
                             {registral.archivo_antecedente_registral && (
-                              <a href={registral.archivo_antecedente_registral} target="_blank" rel="noopener noreferrer" className="inline-flex items-center px-3 py-1 rounded-full text-xs bg-green-100 text-green-800 hover:bg-green-200">
-                                📄 Antecedente Registral
-                              </a>
+                              <div className="bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 rounded-lg p-3 shadow-sm">
+                                <div className="flex items-center justify-between">
+                                  <div className="flex items-center gap-2">
+                                    <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
+                                      <svg className="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                      </svg>
+                                    </div>
+                                    <span className="text-sm font-medium text-gray-800">Antecedente Registral</span>
+                                  </div>
+                                  <a 
+                                    href={`/api/v1/files/registral/${registral.archivo_antecedente_registral.split('/').pop()}/download`} 
+                                    download
+                                    className="w-8 h-8 bg-green-100 hover:bg-green-200 rounded-full flex items-center justify-center transition-colors duration-200"
+                                    title="Descargar antecedente"
+                                  >
+                                    <svg className="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                    </svg>
+                                  </a>
+                                </div>
+                              </div>
                             )}
                           </div>
                         </div>
@@ -547,20 +742,70 @@ export default function ModalDetalleInmueble({ inmueble, isOpen, onClose }: Moda
                         </div>
                         <div className="space-y-2">
                           {inspeccion.informe_inspeccion && (
-                            <a href={inspeccion.informe_inspeccion} target="_blank" rel="noopener noreferrer" className="inline-flex items-center px-3 py-1 rounded-full text-xs bg-green-100 text-green-800 hover:bg-green-200">
-                              📄 Informe de Inspección
-                            </a>
+                            <div className="bg-gradient-to-r from-indigo-50 to-purple-50 border border-indigo-200 rounded-lg p-3 shadow-sm">
+                              <div className="flex items-center justify-between">
+                                <div className="flex items-center gap-2">
+                                  <div className="w-8 h-8 bg-indigo-100 rounded-full flex items-center justify-center">
+                                    <svg className="w-4 h-4 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                    </svg>
+                                  </div>
+                                  <span className="text-sm font-medium text-gray-800">Informe de Inspección</span>
+                                </div>
+                                <a 
+                                  href={`/api/v1/files/inspeccion/${inspeccion.informe_inspeccion.split('/').pop()}/download`} 
+                                  download
+                                  className="w-8 h-8 bg-indigo-100 hover:bg-indigo-200 rounded-full flex items-center justify-center transition-colors duration-200"
+                                  title="Descargar informe"
+                                >
+                                  <svg className="w-4 h-4 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                  </svg>
+                                </a>
+                              </div>
+                            </div>
                           )}
                         </div>
                       </div>
                       {inspeccion.evidencias_fotograficas && inspeccion.evidencias_fotograficas.length > 0 && (
-                        <div className="mt-4">
-                          <p className="text-sm font-medium text-gray-700 mb-2">Evidencias Fotográficas ({inspeccion.evidencias_fotograficas.length}):</p>
-                          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2">
+                        <div className="mt-6">
+                          <h5 className="text-md font-semibold text-gray-800 mb-3 flex items-center">
+                            <svg className="w-5 h-5 mr-2 text-pink-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                            </svg>
+                            Evidencias Fotográficas ({inspeccion.evidencias_fotograficas.length})
+                          </h5>
+                          <div className="grid grid-cols-1 gap-3">
                             {inspeccion.evidencias_fotograficas.map((evidencia: Evidencia, idx: number) => (
-                              <a key={idx} href={evidencia.url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center px-2 py-1 rounded text-xs bg-blue-100 text-blue-800 hover:bg-blue-200 truncate">
-                                📷 {evidencia.originalName || `Evidencia ${idx + 1}`}
-                              </a>
+                              <div key={idx} className="bg-gradient-to-r from-pink-50 to-rose-50 border border-pink-200 rounded-lg p-4 shadow-sm">
+                                <div className="flex items-center justify-between gap-3">
+                                  <div className="flex items-center gap-3 flex-1 min-w-0">
+                                    <div className="w-10 h-10 bg-pink-100 rounded-full flex items-center justify-center flex-shrink-0">
+                                      <svg className="w-5 h-5 text-pink-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                      </svg>
+                                    </div>
+                                    <div className="flex-1 min-w-0">
+                                      <p className="text-sm font-medium text-gray-800 break-all">
+                                        {evidencia.originalName || `Evidencia ${idx + 1}`}
+                                      </p>
+                                      <p className="text-xs text-gray-500 mt-1">
+                                        Archivo de imagen
+                                      </p>
+                                    </div>
+                                  </div>
+                                  <a 
+                                    href={`/api/v1/files/inspeccion/${evidencia.url.split('/').pop()}/download`} 
+                                    download
+                                    className="w-10 h-10 bg-pink-100 hover:bg-pink-200 rounded-full flex items-center justify-center transition-colors duration-200 flex-shrink-0"
+                                    title="Descargar evidencia"
+                                  >
+                                    <svg className="w-5 h-5 text-pink-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                    </svg>
+                                  </a>
+                                </div>
+                              </div>
                             ))}
                           </div>
                         </div>
