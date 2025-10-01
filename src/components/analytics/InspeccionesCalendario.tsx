@@ -3,8 +3,15 @@
 import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip } from 'recharts';
 import { analyticsService, useAnalytics, AnalyticsFilters } from '@/services/analyticsService';
 
+interface InspeccionesCalendarioData {
+  totalInspecciones: number;
+  proximasInspecciones: number;
+  inspeccionesVencidas: number;
+  serieTemporal: Array<{ mes: string; total: number }>;
+}
+
 export default function InspeccionesCalendario({ filters }: { filters?: AnalyticsFilters }) {
-  const { data, loading, error } = useAnalytics<any>(analyticsService.getInspeccionesCalendario, filters);
+  const { data, loading, error } = useAnalytics<InspeccionesCalendarioData>(analyticsService.getInspeccionesCalendario, filters);
 
   if (loading) return <div>Cargando calendario de inspecciones...</div>;
   if (error) return <div>Error: {error.message}</div>;

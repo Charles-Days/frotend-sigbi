@@ -3,8 +3,15 @@
 import { ResponsiveContainer, PieChart, Pie, Cell, Legend, Tooltip } from 'recharts';
 import { analyticsService, useAnalytics, AnalyticsFilters } from '@/services/analyticsService';
 
+interface AnalisisCatastralData {
+  totalCatastrales: number;
+  conPlanoCatastral: number;
+  sinPlanoCatastral: number;
+  distribucionSuperficie: Array<{ tipoSuperficie: string; total: number }>;
+}
+
 export default function AnalisisCatastral({ filters }: { filters?: AnalyticsFilters }) {
-  const { data, loading, error } = useAnalytics<any>(analyticsService.getAnalisisCatastral, filters);
+  const { data, loading, error } = useAnalytics<AnalisisCatastralData>(analyticsService.getAnalisisCatastral, filters);
   const COLORS = ['#00C49F', '#FF8042', '#8884d8', '#82ca9d'];
 
   if (loading) return <div>Cargando análisis catastral...</div>;
@@ -42,7 +49,7 @@ export default function AnalisisCatastral({ filters }: { filters?: AnalyticsFilt
           <ResponsiveContainer width="100%" height={280}>
             <PieChart>
               <Pie data={data.distribucionSuperficie} dataKey="total" nameKey="tipoSuperficie" outerRadius={100} label labelLine={{ stroke: '#9CA3AF' }}>
-                {data.distribucionSuperficie.map((_: any, index: number) => (
+                {data.distribucionSuperficie.map((_, index) => (
                   <Cell key={index} fill={COLORS[index % COLORS.length]} />
                 ))}
               </Pie>

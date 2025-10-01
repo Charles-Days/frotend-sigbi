@@ -5,14 +5,18 @@ import { analyticsService, useAnalytics, AnalyticsFilters } from '@/services/ana
 
 interface SerieTemporalItem { periodo: string; estadoActualInmueble: string; total: number; }
 
+interface InmueblesEstadisticasData {
+  serieTemporal: SerieTemporalItem[];
+}
+
 export default function InmueblesEstadisticas({ filters }: { filters?: AnalyticsFilters }) {
-  const { data, loading, error } = useAnalytics<any>(analyticsService.getInmueblesEstadisticas, filters);
+  const { data, loading, error } = useAnalytics<InmueblesEstadisticasData>(analyticsService.getInmueblesEstadisticas, filters);
 
   if (loading) return <div>Cargando estadísticas de inmuebles...</div>;
   if (error) return <div>Error: {error.message}</div>;
   if (!data) return null;
 
-  const chartData = (data.serieTemporal as SerieTemporalItem[]).reduce((acc: any[], item: SerieTemporalItem) => {
+  const chartData = (data.serieTemporal as SerieTemporalItem[]).reduce((acc: Record<string, number | string>[], item: SerieTemporalItem) => {
     const existing = acc.find((x) => x.periodo === item.periodo);
     if (existing) {
       existing[item.estadoActualInmueble] = item.total;

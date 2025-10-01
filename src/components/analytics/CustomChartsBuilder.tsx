@@ -32,29 +32,28 @@ export default function CustomChartsBuilder() {
   const [selectedMunicipios, setSelectedMunicipios] = useState<string[]>([]);
 
   const requestBody = useMemo(() => {
-    const filtrosGlobales: Record<string, any> = {};
+    const filtrosGlobales: Record<string, unknown> = {};
     if (estado) filtrosGlobales.estado = [estado];
     if (fechaInicio) filtrosGlobales.fechaInicio = fechaInicio;
     if (fechaFin) filtrosGlobales.fechaFin = fechaFin;
 
-    const graficas = selectedMetrics.map((metrica) => {
-      const g: any = { metrica };
+    type GraficaItem = { metrica: string; comparacion?: string; titulo?: string; filtros?: Record<string, unknown> };
+
+    const graficas: GraficaItem[] = selectedMetrics.flatMap((metrica) => {
+      const g: GraficaItem = { metrica };
       if (selectedComparison && selectedComparison !== 'ninguna') {
         g.comparacion = selectedComparison;
       }
       // Si se seleccionan municipios, crear una gráfica por municipio
       if (metrica === 'total_inmuebles' && selectedMunicipios.length > 0) {
-        return selectedMunicipios.map((municipio) => ({ metrica, titulo: municipio, filtros: { municipio: [municipio] } }));
+        return selectedMunicipios.map((municipio): GraficaItem => ({ metrica, titulo: municipio, filtros: { municipio: [municipio] } }));
       }
-      return g;
+      return [g];
     });
-
-    // Aplanar en caso de que alguna entrada sea array
-    const flat = ([] as any[]).concat(...graficas);
 
     return {
       ...(Object.keys(filtrosGlobales).length > 0 ? { filtrosGlobales } : {}),
-      graficas: flat,
+      graficas,
     };
   }, [selectedMetrics, selectedComparison, estado, fechaInicio, fechaFin, selectedMunicipios]);
 
@@ -123,7 +122,7 @@ export default function CustomChartsBuilder() {
                   <div className="text-xs text-gray-500">Selecciona un estado para ver municipios</div>
                 )}
               </div>
-              <p className="text-xs text-gray-600 mt-1">Consejo: marca "Total de Inmuebles" para comparar municipios seleccionados.</p>
+              <p className="text-xs text-gray-600 mt-1">Consejo: marca &quot;Total de Inmuebles&quot; para comparar municipios seleccionados.</p>
             </div>
           </div>
         </div>

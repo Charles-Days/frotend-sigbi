@@ -45,11 +45,11 @@ export default function VistaInmuebles({
 
 
   // Funciones de manejo de eventos
-  const handleFiltersChange = (_newFilters: Record<string, unknown>) => {
+  const handleFiltersChange = () => {
     // Placeholder function
   };
 
-  const handleSearchChange = (_search: string) => {
+  const handleSearchChange = () => {
     // Placeholder function
   };
 
@@ -71,7 +71,7 @@ export default function VistaInmuebles({
     // Placeholder function
   };
 
-  const handleSelectionChange = (_ids: string[]) => {
+  const handleSelectionChange = () => {
     // Placeholder function
   };
 

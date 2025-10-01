@@ -10,7 +10,7 @@ export const normalizeChartData = (data: ChartData): ChartData => {
   return {
     ...data,
     metrica: String(data.metrica),
-    titulo: String((data as any).titulo ?? data.metrica),
+    titulo: String((data as unknown as Record<string, unknown>).titulo ?? data.metrica),
     comparacion: data.comparacion ? String(data.comparacion) : null,
   };
 };

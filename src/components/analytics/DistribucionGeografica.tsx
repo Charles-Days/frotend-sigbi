@@ -4,8 +4,14 @@ import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Toolti
 import { analyticsService, useAnalytics, AnalyticsFilters } from '@/services/analyticsService';
 import { useState } from 'react';
 
+interface DistribucionGeograficaData {
+  porEstado: Array<{ estado: string; total: number }>;
+  porMunicipio: Array<{ municipio: string; total: number }>;
+  porEstadoYMunicipio: Array<{ estado: string; municipio: string; total: number }>;
+}
+
 export default function DistribucionGeografica({ filters }: { filters?: AnalyticsFilters }) {
-  const { data, loading, error } = useAnalytics<any>(analyticsService.getDistribucionGeografica, filters);
+  const { data, loading, error } = useAnalytics<DistribucionGeograficaData>(analyticsService.getDistribucionGeografica, filters);
   const [vista, setVista] = useState<'estado' | 'municipio'>('estado');
 
   if (loading) return <div>Cargando distribución geográfica...</div>;
@@ -45,7 +51,7 @@ export default function DistribucionGeografica({ filters }: { filters?: Analytic
               </tr>
             </thead>
             <tbody>
-              {data.porEstadoYMunicipio.slice(0, 10).map((item: any, idx: number) => (
+              {data.porEstadoYMunicipio.slice(0, 10).map((item, idx) => (
                 <tr key={idx} className="border-b last:border-0">
                   <td className="py-2 pr-4">{item.estado}</td>
                   <td className="py-2 pr-4">{item.municipio}</td>

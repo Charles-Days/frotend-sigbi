@@ -28,7 +28,6 @@ export default function ExportSection({
   const [pendingFormat, setPendingFormat] = useState<'excel' | 'pdf' | null>(null);
   const [pendingType, setPendingType] = useState<'selected' | 'all' | null>(null);
   const [selectAllChecked, setSelectAllChecked] = useState(false);
-  const [errorMsg, setErrorMsg] = useState('');
 
   useEffect(() => {
     const loadFields = async () => {
@@ -82,7 +81,6 @@ export default function ExportSection({
       setIsExporting(false);
       setPendingFormat(null);
       setPendingType(null);
-      setErrorMsg('');
     }
   };
 
@@ -103,7 +101,6 @@ export default function ExportSection({
     }
     setPendingFormat(format);
     setPendingType(type);
-    setErrorMsg('');
     setShowModal(true);
   };
 
@@ -252,10 +249,8 @@ export default function ExportSection({
                       setSelectAllChecked(checked);
                       if (checked) {
                         setSelectedFields(availableFields.map(f => f.key));
-                        setErrorMsg('');
                       } else {
                         setSelectedFields([]);
-                        setErrorMsg('');
                       }
                     }}
                     className="h-4 w-4 text-[#676D47] focus:ring-[#676D47] border-gray-300 rounded"
@@ -275,7 +270,6 @@ export default function ExportSection({
                       setSelectedFields((prev) => {
                         const next = checked ? [...prev, f.key] : prev.filter((k) => k !== f.key);
                         setSelectAllChecked(next.length > 0 && next.length === availableFields.length);
-                        setErrorMsg('');
                         return next;
                       });
                       }}

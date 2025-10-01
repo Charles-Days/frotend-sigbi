@@ -35,7 +35,6 @@ export default function BitacoraPage() {
   const [loading, setLoading] = useState(false);
   const [search, setSearch] = useState('');
   const [filterDate, setFilterDate] = useState('');
-  const [filterUser, setFilterUser] = useState('');
   const [filterEntidad, setFilterEntidad] = useState('');
   const [totalRegistros, setTotalRegistros] = useState(0);
   const [currentPage, setCurrentPage] = useState(0);
@@ -82,21 +81,19 @@ export default function BitacoraPage() {
 
   useEffect(() => {
     cargarBitacora();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentPage, pageSize, filterEntidad]);
 
   const filtrarBitacora = (entrada: BitacoraEntry) => {
-    const cumpleBusqueda = !search || 
+    const cumpleBusqueda = !search ||
       entrada.entidadAfectada.toLowerCase().includes(search.toLowerCase()) ||
       (entrada.tipoAccion && entrada.tipoAccion.toLowerCase().includes(search.toLowerCase())) ||
       (entrada.descripcion && entrada.descripcion.toLowerCase().includes(search.toLowerCase()));
-    
-    const cumpleFecha = !filterDate || 
+
+    const cumpleFecha = !filterDate ||
       new Date(entrada.fecha).toDateString() === new Date(filterDate).toDateString();
-    
-    const cumpleUsuario = !filterUser || 
-      (entrada.descripcion && entrada.descripcion.toLowerCase().includes(filterUser.toLowerCase()));
-    
-    return cumpleBusqueda && cumpleFecha && cumpleUsuario;
+
+    return cumpleBusqueda && cumpleFecha;
   };
 
   const bitacoraFiltrada = bitacora.filter(filtrarBitacora);

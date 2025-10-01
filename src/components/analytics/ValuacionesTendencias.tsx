@@ -3,8 +3,28 @@
 import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
 import { analyticsService, useAnalytics, AnalyticsFilters } from '@/services/analyticsService';
 
+interface ValuacionesReciente {
+  id: string;
+  numeroAvaluo: string;
+  valorSenaladoAvaluo: string;
+  fechaAvaluo: string;
+  tipoValuacion: string;
+  caracteristicaInmueble?: {
+    municipio: string;
+    estado: string;
+  };
+}
+
+interface ValuacionesTendenciasData {
+  totalValuaciones: number;
+  distribucion: {
+    porTipoValuacion: Array<{ tipoValuacion: string; total: number }>;
+  };
+  valuacionesRecientes: ValuacionesReciente[];
+}
+
 export default function ValuacionesTendencias({ filters }: { filters?: AnalyticsFilters }) {
-  const { data, loading, error } = useAnalytics<any>(analyticsService.getValuacionesTendencias, filters);
+  const { data, loading, error } = useAnalytics<ValuacionesTendenciasData>(analyticsService.getValuacionesTendencias, filters);
 
   if (loading) return <div>Cargando tendencias de valuaciones...</div>;
   if (error) return <div>Error: {error.message}</div>;
@@ -39,7 +59,7 @@ export default function ValuacionesTendencias({ filters }: { filters?: Analytics
               </tr>
             </thead>
             <tbody>
-              {data.valuacionesRecientes.map((v: any) => (
+              {data.valuacionesRecientes.map((v) => (
                 <tr key={v.id} className="border-b last:border-0">
                   <td className="py-2 pr-4">{v.numeroAvaluo}</td>
                   <td className="py-2 pr-4">${parseFloat(v.valorSenaladoAvaluo).toLocaleString()}</td>
